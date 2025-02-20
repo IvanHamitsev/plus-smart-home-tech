@@ -1,7 +1,10 @@
-package collector.dto;
+package collector.dto.sensor;
 
+import collector.dto.enums.SensorEventType;
 import jakarta.validation.constraints.*;
+import lombok.Data;
 
+@Data
 public class LightSensorEvent extends SensorEvent {
     @NotNull
     @Min(1)

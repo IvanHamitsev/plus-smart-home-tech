@@ -1,5 +1,6 @@
-package collector.dto;
+package collector.dto.hub;
 
+import collector.dto.enums.HubEventType;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import jakarta.validation.constraints.NotBlank;

@@ -1,11 +1,13 @@
-package collector.dto;
+package collector.dto.sensor;
 
+import collector.dto.enums.SensorEventType;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import lombok.Data;
 
+@Data
 public class ClimateSensorEvent extends SensorEvent {
-
     @NotNull
     @Min(-60)
     @Max(80)

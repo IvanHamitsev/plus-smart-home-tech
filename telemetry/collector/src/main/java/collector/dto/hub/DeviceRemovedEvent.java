@@ -1,4 +1,6 @@
-package collector.dto;
+package collector.dto.hub;
+
+import collector.dto.enums.HubEventType;
 
 public class DeviceRemovedEvent extends HubEvent {
 

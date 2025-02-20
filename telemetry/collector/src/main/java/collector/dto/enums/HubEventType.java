@@ -1,4 +1,4 @@
-package collector.dto;
+package collector.dto.enums;
 
 public enum HubEventType {
 

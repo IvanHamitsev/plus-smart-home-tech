@@ -1,4 +1,4 @@
-package collector.dto;
+package collector.dto.hub;
 
 public class ScenarioCondition {
     String sensorId;

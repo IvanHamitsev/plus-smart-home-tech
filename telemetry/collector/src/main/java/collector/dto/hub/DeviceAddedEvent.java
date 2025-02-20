@@ -1,5 +1,6 @@
-package collector.dto;
+package collector.dto.hub;
 
+import collector.dto.enums.HubEventType;
 import jakarta.validation.constraints.NotBlank;
 
 public class DeviceAddedEvent extends HubEvent {

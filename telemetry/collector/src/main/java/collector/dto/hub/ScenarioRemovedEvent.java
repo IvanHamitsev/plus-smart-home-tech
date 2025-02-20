@@ -1,5 +1,7 @@
-package collector.dto;
+package collector.dto.hub;
 
+import collector.dto.hub.HubEvent;
+import collector.dto.enums.HubEventType;
 import jakarta.validation.constraints.Size;
 
 public class ScenarioRemovedEvent extends HubEvent {

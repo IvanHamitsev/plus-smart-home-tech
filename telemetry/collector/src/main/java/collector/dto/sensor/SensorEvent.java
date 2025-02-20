@@ -1,5 +1,6 @@
-package collector.dto;
+package collector.dto.sensor;
 
+import collector.dto.enums.SensorEventType;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import jakarta.validation.constraints.*;
@@ -28,8 +29,7 @@ public abstract class SensorEvent {
     @NotBlank
     private String hubId;
     private Instant timestamp = Instant.now();
-    @NotBlank
-    private String type;
+    private SensorEventType type;
 
     @NotNull
     public abstract SensorEventType getType();
