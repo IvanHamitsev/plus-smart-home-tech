@@ -1,6 +1,6 @@
 package collector.serdes;
 
-import collector.dto.enums.SensorEventType;
+import collector.dto.InpDtoMapper;
 import collector.dto.sensor.SensorEvent;
 import org.apache.avro.io.BinaryEncoder;
 import org.apache.avro.io.DatumWriter;
@@ -21,49 +21,41 @@ public class SensorEventAvroSerializer implements Serializer<SensorEvent> {
         }
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             BinaryEncoder encoder = EncoderFactory.get().binaryEncoder(outputStream, null);
-            // Debug Code
-            if (measure.getType() == SensorEventType.LIGHT_SENSOR_EVENT) {
-                LightSensorEvent realEvent = LightSensorEvent.newBuilder()
-                        .setId(measure.getId())
-                        .setHubId(measure.getHubId())
-                        .setTimestamp(measure.getTimestamp())
-                        .setLinkQuality(((collector.dto.sensor.LightSensorEvent)measure).getLinkQuality())
-                        .setLuminosity(((collector.dto.sensor.LightSensorEvent)measure).getLuminosity())
-                        .setType("LIGHT_SENSOR_EVENT")
-                        .build();
-                DatumWriter<LightSensorEvent> tmpDatum = new SpecificDatumWriter<>(LightSensorEvent.class);
-                tmpDatum.write(realEvent, encoder);
-            } else {
-                var datumWriter = getDatumWriter(measure);
-                datumWriter.write(measure, encoder);
+
+            switch (measure.getType()) {
+                case LIGHT_SENSOR_EVENT -> {
+                    LightSensorEvent realEvent = InpDtoMapper.mapLightSensorEvent(measure);
+                    DatumWriter<LightSensorEvent> datumWriter = new SpecificDatumWriter<>(LightSensorEvent.class);
+                    datumWriter.write(realEvent, encoder);
+                }
+                case SWITCH_SENSOR_EVENT -> {
+                    SwitchSensorEvent realEvent = InpDtoMapper.mapSwitchSensorEvent(measure);
+                    DatumWriter<SwitchSensorEvent> datumWriter = new SpecificDatumWriter<>(SwitchSensorEvent.class);
+                    datumWriter.write(realEvent, encoder);
+                }
+                case MOTION_SENSOR_EVENT -> {
+                    MotionSensorEvent realEvent = InpDtoMapper.mapMotionSensorEvent(measure);
+                    DatumWriter<MotionSensorEvent> datumWriter = new SpecificDatumWriter<>(MotionSensorEvent.class);
+                    datumWriter.write(realEvent, encoder);
+                }
+                case TEMPERATURE_SENSOR_EVENT -> {
+                    TemperatureSensorEvent realEvent = InpDtoMapper.mapTemperatureSensorEvent(measure);
+                    DatumWriter<TemperatureSensorEvent> datumWriter = new SpecificDatumWriter<>(TemperatureSensorEvent.class);
+                    datumWriter.write(realEvent, encoder);
+                }
+                case CLIMATE_SENSOR_EVENT -> {
+                    ClimateSensorEvent realEvent = InpDtoMapper.mapClimateSensorEvent(measure);
+                    DatumWriter<ClimateSensorEvent> datumWriter = new SpecificDatumWriter<>(ClimateSensorEvent.class);
+                    datumWriter.write(realEvent, encoder);
+                }
+                default -> {
+                    throw new SerializationException("Ошибка определения типа переданного элемента SensorEvent");
+                }
             }
             encoder.flush();
             return outputStream.toByteArray();
         } catch (IOException e) {
             throw new SerializationException("Ошибка сериализации экземпляра SensorEvent", e);
-        }
-    }
-
-    private static SpecificDatumWriter getDatumWriter(SensorEvent measure) {
-        switch (measure.getType()) {
-            case SWITCH_SENSOR_EVENT -> {
-                return new SpecificDatumWriter<>(SwitchSensorEvent.class);
-            }
-            case LIGHT_SENSOR_EVENT -> {
-                return new SpecificDatumWriter<>(LightSensorEvent.class);
-            }
-            case MOTION_SENSOR_EVENT -> {
-                return new SpecificDatumWriter<>(MotionSensorEvent.class);
-            }
-            case CLIMATE_SENSOR_EVENT -> {
-                return new SpecificDatumWriter<>(ClimateSensorEvent.class);
-            }
-            case TEMPERATURE_SENSOR_EVENT -> {
-                return new SpecificDatumWriter<>(TemperatureSensorEvent.class);
-            }
-            default -> {
-                throw new SerializationException("Ошибка определения типа переданного элемента SensorEvent");
-            }
         }
     }
 }
