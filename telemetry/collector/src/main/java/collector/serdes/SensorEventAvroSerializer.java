@@ -1,7 +1,7 @@
 package collector.serdes;
 
-import collector.dto.InpDtoMapper;
-import collector.dto.sensor.SensorEvent;
+import collector.mapper.InpDtoMapper;
+import collector.dto.sensor.SensorEventDto;
 import org.apache.avro.io.BinaryEncoder;
 import org.apache.avro.io.DatumWriter;
 import org.apache.avro.io.EncoderFactory;
@@ -12,10 +12,10 @@ import ru.yandex.practicum.kafka.telemetry.event.*;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-public class SensorEventAvroSerializer implements Serializer<SensorEvent> {
+public class SensorEventAvroSerializer implements Serializer<SensorEventDto> {
 
     @Override
-    public byte[] serialize(String topic, SensorEvent measure) {
+    public byte[] serialize(String topic, SensorEventDto measure) {
         if (measure == null) {
             return null;
         }
@@ -49,13 +49,13 @@ public class SensorEventAvroSerializer implements Serializer<SensorEvent> {
                     datumWriter.write(realEvent, encoder);
                 }
                 default -> {
-                    throw new SerializationException("Ошибка определения типа переданного элемента SensorEvent");
+                    throw new SerializationException("Ошибка определения типа переданного элемента SensorEventDto");
                 }
             }
             encoder.flush();
             return outputStream.toByteArray();
         } catch (IOException e) {
-            throw new SerializationException("Ошибка сериализации экземпляра SensorEvent", e);
+            throw new SerializationException("Ошибка сериализации экземпляра SensorEventDto", e);
         }
     }
 }

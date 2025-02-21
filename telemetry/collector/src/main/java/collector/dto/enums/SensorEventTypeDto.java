@@ -1,9 +1,9 @@
 package collector.dto.enums;
 
-public enum SensorEventType {
+public enum SensorEventTypeDto {
     CLIMATE_SENSOR_EVENT, LIGHT_SENSOR_EVENT, MOTION_SENSOR_EVENT, SWITCH_SENSOR_EVENT, TEMPERATURE_SENSOR_EVENT;
 
-    public static SensorEventType from(String str) {
+    public static SensorEventTypeDto from(String str) {
         return switch (str.toLowerCase()) {
             case "climate_sensor_event" -> CLIMATE_SENSOR_EVENT;
             case "light_sensor_event" -> LIGHT_SENSOR_EVENT;

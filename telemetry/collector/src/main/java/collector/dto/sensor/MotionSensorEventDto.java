@@ -1,13 +1,13 @@
 package collector.dto.sensor;
 
-import collector.dto.enums.SensorEventType;
+import collector.dto.enums.SensorEventTypeDto;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-public class MotionSensorEvent extends SensorEvent {
+public class MotionSensorEventDto extends SensorEventDto {
     @Min(1)
     @Max(100)
     private int linkQuality;
@@ -16,7 +16,7 @@ public class MotionSensorEvent extends SensorEvent {
     Integer voltage;
 
     @Override
-    public SensorEventType getType() {
-        return SensorEventType.MOTION_SENSOR_EVENT;
+    public SensorEventTypeDto getType() {
+        return SensorEventTypeDto.MOTION_SENSOR_EVENT;
     }
 }

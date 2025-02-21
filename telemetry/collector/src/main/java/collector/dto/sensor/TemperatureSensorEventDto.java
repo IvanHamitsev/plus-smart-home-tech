@@ -1,13 +1,13 @@
 package collector.dto.sensor;
 
-import collector.dto.enums.SensorEventType;
+import collector.dto.enums.SensorEventTypeDto;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-public class TemperatureSensorEvent extends SensorEvent {
+public class TemperatureSensorEventDto extends SensorEventDto {
     @NotNull
     @Min(-60)
     @Max(300)
@@ -17,7 +17,7 @@ public class TemperatureSensorEvent extends SensorEvent {
     @Max(600)
     Integer temperatureF;
     @Override
-    public SensorEventType getType() {
-        return SensorEventType.TEMPERATURE_SENSOR_EVENT;
+    public SensorEventTypeDto getType() {
+        return SensorEventTypeDto.TEMPERATURE_SENSOR_EVENT;
     }
 }

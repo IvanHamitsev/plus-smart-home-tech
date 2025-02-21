@@ -1,5 +1,5 @@
 package collector.dto.enums;
 
-public enum ScenarioOperationType {
+public enum ScenarioOperationTypeDto {
     EQUALS, GREATER_THAN, LOWER_THAN;
 }

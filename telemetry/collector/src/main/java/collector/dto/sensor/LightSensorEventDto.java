@@ -1,11 +1,11 @@
 package collector.dto.sensor;
 
-import collector.dto.enums.SensorEventType;
+import collector.dto.enums.SensorEventTypeDto;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 
 @Data
-public class LightSensorEvent extends SensorEvent {
+public class LightSensorEventDto extends SensorEventDto {
     @NotNull
     @Min(1)
     @Max(100)
@@ -16,7 +16,7 @@ public class LightSensorEvent extends SensorEvent {
     private int luminosity;
 
     @Override
-    public SensorEventType getType() {
-        return SensorEventType.LIGHT_SENSOR_EVENT;
+    public SensorEventTypeDto getType() {
+        return SensorEventTypeDto.LIGHT_SENSOR_EVENT;
     }
 }

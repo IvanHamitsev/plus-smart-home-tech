@@ -1,6 +1,6 @@
 package collector.dto.hub;
 
-import collector.dto.enums.HubEventType;
+import collector.dto.enums.HubEventTypeDto;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import jakarta.validation.constraints.NotBlank;
@@ -13,24 +13,24 @@ import java.time.Instant;
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.EXISTING_PROPERTY,
         property = "type",
-        defaultImpl = HubEventType.class
+        defaultImpl = HubEventTypeDto.class
 )
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = DeviceAddedEvent.class, name = "DEVICE_ADDED"),
-        @JsonSubTypes.Type(value = DeviceRemovedEvent.class, name = "DEVICE_REMOVED"),
-        @JsonSubTypes.Type(value = ScenarioAddedEvent.class, name = "SCENARIO_ADDED"),
-        @JsonSubTypes.Type(value = ScenarioRemovedEvent.class, name = "SCENARIO_REMOVED")
+        @JsonSubTypes.Type(value = DeviceAddedEventDto.class, name = "DEVICE_ADDED"),
+        @JsonSubTypes.Type(value = DeviceRemovedEventDto.class, name = "DEVICE_REMOVED"),
+        @JsonSubTypes.Type(value = ScenarioAddedEventDto.class, name = "SCENARIO_ADDED"),
+        @JsonSubTypes.Type(value = ScenarioRemovedEventDto.class, name = "SCENARIO_REMOVED")
 })
 
 @Data
-public abstract class HubEvent {
+public abstract class HubEventDto {
     @NotBlank
     private String id;
     @NotBlank
     private String hubId;
     private Instant timestamp = Instant.now();
-    private HubEventType type;
+    private HubEventTypeDto type;
 
     @NotNull
-    public abstract HubEventType getType();
+    public abstract HubEventTypeDto getType();
 }

@@ -1,5 +1,5 @@
 package collector.dto.enums;
 
-public enum ScenarioConditionType {
+public enum ScenarioConditionTypeDto {
     MOTION, LUMINOSITY, SWITCH, TEMPERATURE, CO2LEVEL, HUMIDITY;
 }

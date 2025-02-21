@@ -1,7 +1,7 @@
 package collector.controller;
 
-import collector.dto.hub.HubEvent;
-import collector.dto.sensor.SensorEvent;
+import collector.dto.hub.HubEventDto;
+import collector.dto.sensor.SensorEventDto;
 import collector.service.CollectorService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -21,12 +21,12 @@ public class EventsController {
     private final CollectorService service;
 
     @PostMapping("/sensors")
-    public void fromSensor(@Valid @RequestBody SensorEvent measure) {
+    public void fromSensor(@Valid @RequestBody SensorEventDto measure) {
         service.sendSensor(measure);
     }
 
     @PostMapping("/hubs")
-    public void fromHub(@Valid @RequestBody HubEvent hubAction) {
+    public void fromHub(@Valid @RequestBody HubEventDto hubAction) {
         service.sendHub(hubAction);
     }
 }

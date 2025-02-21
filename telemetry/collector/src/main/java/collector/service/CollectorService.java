@@ -1,7 +1,7 @@
 package collector.service;
 
-import collector.dto.hub.HubEvent;
-import collector.dto.sensor.SensorEvent;
+import collector.dto.hub.HubEventDto;
+import collector.dto.sensor.SensorEventDto;
 import collector.serdes.HubEventAvroSerializer;
 import collector.serdes.SensorEventAvroSerializer;
 import jakarta.annotation.PostConstruct;
@@ -26,8 +26,8 @@ public class CollectorService implements AutoCloseable {
     @Value("${collector.hubTopic}")
     String hubTopic;
 
-    Producer<String, SensorEvent> sensorProducer;
-    Producer<String, HubEvent> hubProducer;
+    Producer<String, SensorEventDto> sensorProducer;
+    Producer<String, HubEventDto> hubProducer;
 
     // инициализацию нельзя сделать в конструкторе, поскольку не пройдёт инжекция через @Value
     @PostConstruct
@@ -49,14 +49,14 @@ public class CollectorService implements AutoCloseable {
     }
 
     // отправка в топик telemetry.sensors.v1
-    public void sendSensor(SensorEvent measure) {
-        ProducerRecord<String, SensorEvent> record = new ProducerRecord<>(sensorTopic, measure);
+    public void sendSensor(SensorEventDto measure) {
+        ProducerRecord<String, SensorEventDto> record = new ProducerRecord<>(sensorTopic, measure);
         sensorProducer.send(record);
     }
 
     // отправка в топик telemetry.hubs.v1
-    public void sendHub(HubEvent action) {
-        ProducerRecord<String, HubEvent> record = new ProducerRecord<>(hubTopic, action);
+    public void sendHub(HubEventDto action) {
+        ProducerRecord<String, HubEventDto> record = new ProducerRecord<>(hubTopic, action);
         hubProducer.send(record);
     }
 

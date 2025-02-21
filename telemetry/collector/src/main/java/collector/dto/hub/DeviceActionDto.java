@@ -3,8 +3,8 @@ package collector.dto.hub;
 import lombok.Data;
 
 @Data
-public class DeviceAction {
+public class DeviceActionDto {
     private String sensorId;
-    private String type; // Enum ActionType
+    private String type; // Enum ActionTypeDto
     private Integer value;
 }
