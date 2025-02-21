@@ -1,7 +1,10 @@
 package collector.dto;
 
+import collector.dto.hub.HubEvent;
 import collector.dto.sensor.SensorEvent;
 import ru.yandex.practicum.kafka.telemetry.event.*;
+
+import java.util.List;
 
 public class InpDtoMapper {
     public static LightSensorEvent mapLightSensorEvent(SensorEvent inp) {
@@ -56,6 +59,63 @@ public class InpDtoMapper {
                 .setTemperatureC(((collector.dto.sensor.ClimateSensorEvent)inp).getTemperatureC())
                 .setHumidity(((collector.dto.sensor.ClimateSensorEvent)inp).getHumidity())
                 .setCo2Level(((collector.dto.sensor.ClimateSensorEvent)inp).getCo2Level())
+                .setType(inp.getType().toString())
+                .build();
+    }
+
+    public static DeviceAddedEvent mapDeviceAddedEvent(HubEvent inp) {
+        return DeviceAddedEvent.newBuilder()
+                .setId(inp.getId())
+                .setHubId(inp.getHubId())
+                .setTimestamp(inp.getTimestamp())
+                .setDeviceType(((collector.dto.hub.DeviceAddedEvent)inp).getDeviceType())
+                .setType(inp.getType().toString())
+                .build();
+    }
+
+    public static DeviceRemovedEvent mapDeviceRemovedEvent(HubEvent inp) {
+        return DeviceRemovedEvent.newBuilder()
+                .setId(inp.getId())
+                .setHubId(inp.getHubId())
+                .setTimestamp(inp.getTimestamp())
+                .setType(inp.getType().toString())
+                .build();
+    }
+
+    public static ScenarioCondition mapScenarioCondition(collector.dto.hub.ScenarioCondition inp) {
+        return ScenarioCondition.newBuilder()
+                .setSensorId(inp.getSensorId())
+                .setType(ScenarioConditionType.valueOf(inp.getType()))
+                .setOperation(ScenarioOperationType.valueOf(inp.getOperation()))
+                .setValue(inp.getValue())
+                .build();
+    }
+
+    private static DeviceAction mapDeviceAction(collector.dto.hub.DeviceAction inp) {
+        return DeviceAction.newBuilder()
+                .setSensorId(inp.getSensorId())
+                .setType(ActionType.valueOf(inp.getType()))
+                .setValue(inp.getValue())
+                .build();
+    }
+    public static ScenarioAddedEvent mapScenarioAddedEvent(HubEvent inp) {
+        return ScenarioAddedEvent.newBuilder()
+                .setId(inp.getId())
+                .setHubId(inp.getHubId())
+                .setTimestamp(inp.getTimestamp())
+                .setName(((collector.dto.hub.ScenarioAddedEvent)inp).getName())
+                .setConditions(List.copyOf(((collector.dto.hub.ScenarioAddedEvent)inp).getConditions().parallelStream().map(InpDtoMapper::mapScenarioCondition).toList()))
+                .setActions(List.copyOf(((collector.dto.hub.ScenarioAddedEvent)inp).getActions().parallelStream().map(InpDtoMapper::mapDeviceAction).toList()))
+                .setType(inp.getType().toString())
+                .build();
+    }
+
+    public static ScenarioRemovedEvent mapScenarioRemovedEvent(HubEvent inp) {
+        return ScenarioRemovedEvent.newBuilder()
+                .setId(inp.getId())
+                .setHubId(inp.getHubId())
+                .setTimestamp(inp.getTimestamp())
+                .setName(((collector.dto.hub.ScenarioRemovedEvent)inp).getName())
                 .setType(inp.getType().toString())
                 .build();
     }

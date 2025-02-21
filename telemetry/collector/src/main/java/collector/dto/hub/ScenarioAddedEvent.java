@@ -3,9 +3,11 @@ package collector.dto.hub;
 import collector.dto.enums.HubEventType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.Data;
 
 import java.util.List;
 
+@Data
 public class ScenarioAddedEvent extends HubEvent {
 
     @Size(min = 3)
