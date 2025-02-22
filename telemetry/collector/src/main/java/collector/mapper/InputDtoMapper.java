@@ -1,8 +1,8 @@
 package collector.mapper;
 
+import collector.dto.InputEventDto;
 import collector.dto.hub.*;
 import collector.dto.sensor.*;
-import collector.dto.sensor.SensorEventDto;
 import ru.yandex.practicum.kafka.telemetry.event.*;
 import ru.yandex.practicum.kafka.telemetry.event.ScenarioCondition;
 import ru.yandex.practicum.kafka.telemetry.event.SwitchSensorEvent;
@@ -10,8 +10,8 @@ import ru.yandex.practicum.kafka.telemetry.event.TemperatureSensorEvent;
 
 import java.util.List;
 
-public class InpDtoMapper {
-    public static LightSensorEvent mapLightSensorEvent(SensorEventDto inp) {
+public class InputDtoMapper {
+    public static LightSensorEvent mapLightSensorEvent(InputEventDto inp) {
         return LightSensorEvent.newBuilder()
                 .setId(inp.getId())
                 .setHubId(inp.getHubId())
@@ -22,7 +22,7 @@ public class InpDtoMapper {
                 .build();
     }
 
-    public static SwitchSensorEvent mapSwitchSensorEvent(SensorEventDto inp) {
+    public static SwitchSensorEvent mapSwitchSensorEvent(InputEventDto inp) {
         return SwitchSensorEvent.newBuilder()
                 .setId(inp.getId())
                 .setHubId(inp.getHubId())
@@ -32,7 +32,7 @@ public class InpDtoMapper {
                 .build();
     }
 
-    public static MotionSensorEvent mapMotionSensorEvent(SensorEventDto inp) {
+    public static MotionSensorEvent mapMotionSensorEvent(InputEventDto inp) {
         return MotionSensorEvent.newBuilder()
                 .setId(inp.getId())
                 .setHubId(inp.getHubId())
@@ -44,7 +44,7 @@ public class InpDtoMapper {
                 .build();
     }
 
-    public static TemperatureSensorEvent mapTemperatureSensorEvent(SensorEventDto inp) {
+    public static TemperatureSensorEvent mapTemperatureSensorEvent(InputEventDto inp) {
         return TemperatureSensorEvent.newBuilder()
                 .setId(inp.getId())
                 .setHubId(inp.getHubId())
@@ -55,7 +55,7 @@ public class InpDtoMapper {
                 .build();
     }
 
-    public static ClimateSensorEvent mapClimateSensorEvent(SensorEventDto inp) {
+    public static ClimateSensorEvent mapClimateSensorEvent(InputEventDto inp) {
         return ClimateSensorEvent.newBuilder()
                 .setId(inp.getId())
                 .setHubId(inp.getHubId())
@@ -67,7 +67,7 @@ public class InpDtoMapper {
                 .build();
     }
 
-    public static DeviceAddedEvent mapDeviceAddedEvent(HubEventDto inp) {
+    public static DeviceAddedEvent mapDeviceAddedEvent(InputEventDto inp) {
         return DeviceAddedEvent.newBuilder()
                 .setId(inp.getId())
                 .setHubId(inp.getHubId())
@@ -77,7 +77,7 @@ public class InpDtoMapper {
                 .build();
     }
 
-    public static DeviceRemovedEvent mapDeviceRemovedEvent(HubEventDto inp) {
+    public static DeviceRemovedEvent mapDeviceRemovedEvent(InputEventDto inp) {
         return DeviceRemovedEvent.newBuilder()
                 .setId(inp.getId())
                 .setHubId(inp.getHubId())
@@ -102,19 +102,19 @@ public class InpDtoMapper {
                 .setValue(inp.getValue())
                 .build();
     }
-    public static ScenarioAddedEvent mapScenarioAddedEvent(HubEventDto inp) {
+    public static ScenarioAddedEvent mapScenarioAddedEvent(InputEventDto inp) {
         return ScenarioAddedEvent.newBuilder()
                 .setId(inp.getId())
                 .setHubId(inp.getHubId())
                 .setTimestamp(inp.getTimestamp())
                 .setName(((ScenarioAddedEventDto)inp).getName())
-                .setConditions(List.copyOf(((ScenarioAddedEventDto)inp).getConditions().parallelStream().map(InpDtoMapper::mapScenarioCondition).toList()))
-                .setActions(List.copyOf(((ScenarioAddedEventDto)inp).getActions().parallelStream().map(InpDtoMapper::mapDeviceAction).toList()))
+                .setConditions(List.copyOf(((ScenarioAddedEventDto)inp).getConditions().parallelStream().map(InputDtoMapper::mapScenarioCondition).toList()))
+                .setActions(List.copyOf(((ScenarioAddedEventDto)inp).getActions().parallelStream().map(InputDtoMapper::mapDeviceAction).toList()))
                 .setType(inp.getType().toString())
                 .build();
     }
 
-    public static ScenarioRemovedEvent mapScenarioRemovedEvent(HubEventDto inp) {
+    public static ScenarioRemovedEvent mapScenarioRemovedEvent(InputEventDto inp) {
         return ScenarioRemovedEvent.newBuilder()
                 .setId(inp.getId())
                 .setHubId(inp.getHubId())

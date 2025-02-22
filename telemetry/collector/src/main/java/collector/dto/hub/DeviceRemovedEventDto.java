@@ -1,13 +1,14 @@
 package collector.dto.hub;
 
-import collector.dto.enums.HubEventTypeDto;
+import collector.dto.InputEventDto;
+import collector.dto.enums.InputEventTypeDto;
 import lombok.Data;
 
 @Data
-public class DeviceRemovedEventDto extends HubEventDto {
+public class DeviceRemovedEventDto extends InputEventDto {
 
     @Override
-    public HubEventTypeDto getType() {
-        return HubEventTypeDto.DEVICE_REMOVED;
+    public InputEventTypeDto getType() {
+        return InputEventTypeDto.DEVICE_REMOVED;
     }
 }

@@ -1,5 +1,7 @@
 package collector.dto.sensor;
 
+import collector.dto.InputEventDto;
+import collector.dto.enums.InputEventTypeDto;
 import collector.dto.enums.SensorEventTypeDto;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -7,7 +9,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-public class ClimateSensorEventDto extends SensorEventDto {
+public class ClimateSensorEventDto extends InputEventDto {
     @NotNull
     @Min(-60)
     @Max(80)
@@ -18,7 +20,7 @@ public class ClimateSensorEventDto extends SensorEventDto {
     Integer co2Level;
 
     @Override
-    public SensorEventTypeDto getType() {
-        return SensorEventTypeDto.CLIMATE_SENSOR_EVENT;
+    public InputEventTypeDto getType() {
+        return InputEventTypeDto.CLIMATE_SENSOR_EVENT;
     }
 }

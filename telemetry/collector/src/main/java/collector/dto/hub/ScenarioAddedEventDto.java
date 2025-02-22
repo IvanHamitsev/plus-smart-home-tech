@@ -1,6 +1,7 @@
 package collector.dto.hub;
 
-import collector.dto.enums.HubEventTypeDto;
+import collector.dto.InputEventDto;
+import collector.dto.enums.InputEventTypeDto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
@@ -8,7 +9,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class ScenarioAddedEventDto extends HubEventDto {
+public class ScenarioAddedEventDto extends InputEventDto {
 
     @Size(min = 3)
     String name;
@@ -19,7 +20,7 @@ public class ScenarioAddedEventDto extends HubEventDto {
     List<DeviceActionDto> actions;
 
     @Override
-    public HubEventTypeDto getType() {
-        return HubEventTypeDto.SCENARIO_ADDED;
+    public InputEventTypeDto getType() {
+        return InputEventTypeDto.SCENARIO_ADDED;
     }
 }

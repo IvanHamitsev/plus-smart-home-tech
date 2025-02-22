@@ -1,18 +1,18 @@
 package collector.service;
 
-import collector.dto.hub.HubEventDto;
-import collector.dto.sensor.SensorEventDto;
-import collector.serdes.HubEventAvroSerializer;
-import collector.serdes.SensorEventAvroSerializer;
+import collector.dto.InputEventDto;
+import collector.serdes.InputEventAvroSerializer;
 import jakarta.annotation.PostConstruct;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.common.serialization.VoidSerializer;
+import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Properties;
 
 @Service
@@ -26,43 +26,36 @@ public class CollectorService implements AutoCloseable {
     @Value("${collector.hubTopic}")
     String hubTopic;
 
-    Producer<String, SensorEventDto> sensorProducer;
-    Producer<String, HubEventDto> hubProducer;
+    Producer<String, InputEventDto> kafkaProducer;
 
     // инициализацию нельзя сделать в конструкторе, поскольку не пройдёт инжекция через @Value
     @PostConstruct
     public void initKafka() {
-        Properties sensorConfig = new Properties();
-        Properties hubConfig = new Properties();
+        Properties kafkaConfig = new Properties();
 
-        sensorConfig.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaHost + ":" + kafkaPort);
-        hubConfig.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaHost + ":" + kafkaPort);
+        kafkaConfig.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaHost + ":" + kafkaPort);
+        kafkaConfig.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        kafkaConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, InputEventAvroSerializer.class);
 
-        sensorConfig.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, VoidSerializer.class);
-        hubConfig.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, VoidSerializer.class);
-
-        sensorConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, SensorEventAvroSerializer.class);
-        hubConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, HubEventAvroSerializer.class);
-
-        sensorProducer = new KafkaProducer<>(sensorConfig);
-        hubProducer = new KafkaProducer<>(hubConfig);
+        kafkaProducer = new KafkaProducer<>(kafkaConfig);
     }
 
     // отправка в топик telemetry.sensors.v1
-    public void sendSensor(SensorEventDto measure) {
-        ProducerRecord<String, SensorEventDto> record = new ProducerRecord<>(sensorTopic, measure);
-        sensorProducer.send(record);
+    public void sendSensor(InputEventDto measure) {
+        Long timestamp = LocalDateTime.now().toInstant(ZoneOffset.UTC).toEpochMilli();
+        ProducerRecord<String, InputEventDto> record = new ProducerRecord<>(sensorTopic, null, timestamp, measure.getHubId(), measure);
+        kafkaProducer.send(record);
     }
 
     // отправка в топик telemetry.hubs.v1
-    public void sendHub(HubEventDto action) {
-        ProducerRecord<String, HubEventDto> record = new ProducerRecord<>(hubTopic, action);
-        hubProducer.send(record);
+    public void sendHub(InputEventDto action) {
+        Long timestamp = LocalDateTime.now().toInstant(ZoneOffset.UTC).toEpochMilli();
+        ProducerRecord<String, InputEventDto> record = new ProducerRecord<>(hubTopic, null, timestamp, action.getHubId(), action);
+        kafkaProducer.send(record);
     }
 
     @Override
     public void close() throws Exception {
-        sensorProducer.close();
-        hubProducer.close();
+        kafkaProducer.close();
     }
 }

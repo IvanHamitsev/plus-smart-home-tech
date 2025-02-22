@@ -1,16 +1,17 @@
 package collector.dto.hub;
 
-import collector.dto.enums.HubEventTypeDto;
+import collector.dto.InputEventDto;
+import collector.dto.enums.InputEventTypeDto;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
-public class ScenarioRemovedEventDto extends HubEventDto {
+public class ScenarioRemovedEventDto extends InputEventDto {
     @Size(min = 3)
     String name;
 
     @Override
-    public HubEventTypeDto getType() {
-        return HubEventTypeDto.SCENARIO_REMOVED;
+    public InputEventTypeDto getType() {
+        return InputEventTypeDto.SCENARIO_REMOVED;
     }
 }
