@@ -4,9 +4,6 @@ import collector.dto.InputEventDto;
 import collector.dto.hub.*;
 import collector.dto.sensor.*;
 import ru.yandex.practicum.kafka.telemetry.event.*;
-import ru.yandex.practicum.kafka.telemetry.event.ScenarioCondition;
-import ru.yandex.practicum.kafka.telemetry.event.SwitchSensorEvent;
-import ru.yandex.practicum.kafka.telemetry.event.TemperatureSensorEvent;
 
 import java.util.List;
 
@@ -16,8 +13,8 @@ public class InputDtoMapper {
                 .setId(inp.getId())
                 .setHubId(inp.getHubId())
                 .setTimestamp(inp.getTimestamp())
-                .setLinkQuality(((LightSensorEventDto)inp).getLinkQuality())
-                .setLuminosity(((LightSensorEventDto)inp).getLuminosity())
+                .setLinkQuality(((LightSensorEventDto) inp).getLinkQuality())
+                .setLuminosity(((LightSensorEventDto) inp).getLuminosity())
                 .setType(inp.getType().toString())
                 .build();
     }
@@ -27,7 +24,7 @@ public class InputDtoMapper {
                 .setId(inp.getId())
                 .setHubId(inp.getHubId())
                 .setTimestamp(inp.getTimestamp())
-                .setState(((SwitchSensorEventDto)inp).getState())
+                .setState(((SwitchSensorEventDto) inp).getState())
                 .setType(inp.getType().toString())
                 .build();
     }
@@ -37,9 +34,9 @@ public class InputDtoMapper {
                 .setId(inp.getId())
                 .setHubId(inp.getHubId())
                 .setTimestamp(inp.getTimestamp())
-                .setLinkQuality(((MotionSensorEventDto)inp).getLinkQuality())
-                .setMotion(((MotionSensorEventDto)inp).getMotion())
-                .setVoltage(((MotionSensorEventDto)inp).getVoltage())
+                .setLinkQuality(((MotionSensorEventDto) inp).getLinkQuality())
+                .setMotion(((MotionSensorEventDto) inp).getMotion())
+                .setVoltage(((MotionSensorEventDto) inp).getVoltage())
                 .setType(inp.getType().toString())
                 .build();
     }
@@ -49,8 +46,8 @@ public class InputDtoMapper {
                 .setId(inp.getId())
                 .setHubId(inp.getHubId())
                 .setTimestamp(inp.getTimestamp())
-                .setTemperatureC(((TemperatureSensorEventDto)inp).getTemperatureC())
-                .setTemperatureF(((TemperatureSensorEventDto)inp).getTemperatureF())
+                .setTemperatureC(((TemperatureSensorEventDto) inp).getTemperatureC())
+                .setTemperatureF(((TemperatureSensorEventDto) inp).getTemperatureF())
                 .setType(inp.getType().toString())
                 .build();
     }
@@ -60,9 +57,9 @@ public class InputDtoMapper {
                 .setId(inp.getId())
                 .setHubId(inp.getHubId())
                 .setTimestamp(inp.getTimestamp())
-                .setTemperatureC(((ClimateSensorEventDto)inp).getTemperatureC())
-                .setHumidity(((ClimateSensorEventDto)inp).getHumidity())
-                .setCo2Level(((ClimateSensorEventDto)inp).getCo2Level())
+                .setTemperatureC(((ClimateSensorEventDto) inp).getTemperatureC())
+                .setHumidity(((ClimateSensorEventDto) inp).getHumidity())
+                .setCo2Level(((ClimateSensorEventDto) inp).getCo2Level())
                 .setType(inp.getType().toString())
                 .build();
     }
@@ -72,7 +69,7 @@ public class InputDtoMapper {
                 .setId(inp.getId())
                 .setHubId(inp.getHubId())
                 .setTimestamp(inp.getTimestamp())
-                .setDeviceType(((DeviceAddedEventDto)inp).getDeviceType())
+                .setDeviceType(((DeviceAddedEventDto) inp).getDeviceType())
                 .setType(inp.getType().toString())
                 .build();
     }
@@ -102,14 +99,15 @@ public class InputDtoMapper {
                 .setValue(inp.getValue())
                 .build();
     }
+
     public static ScenarioAddedEvent mapScenarioAddedEvent(InputEventDto inp) {
         return ScenarioAddedEvent.newBuilder()
                 .setId(inp.getId())
                 .setHubId(inp.getHubId())
                 .setTimestamp(inp.getTimestamp())
-                .setName(((ScenarioAddedEventDto)inp).getName())
-                .setConditions(List.copyOf(((ScenarioAddedEventDto)inp).getConditions().parallelStream().map(InputDtoMapper::mapScenarioCondition).toList()))
-                .setActions(List.copyOf(((ScenarioAddedEventDto)inp).getActions().parallelStream().map(InputDtoMapper::mapDeviceAction).toList()))
+                .setName(((ScenarioAddedEventDto) inp).getName())
+                .setConditions(List.copyOf(((ScenarioAddedEventDto) inp).getConditions().parallelStream().map(InputDtoMapper::mapScenarioCondition).toList()))
+                .setActions(List.copyOf(((ScenarioAddedEventDto) inp).getActions().parallelStream().map(InputDtoMapper::mapDeviceAction).toList()))
                 .setType(inp.getType().toString())
                 .build();
     }
@@ -119,7 +117,7 @@ public class InputDtoMapper {
                 .setId(inp.getId())
                 .setHubId(inp.getHubId())
                 .setTimestamp(inp.getTimestamp())
-                .setName(((ScenarioRemovedEventDto)inp).getName())
+                .setName(((ScenarioRemovedEventDto) inp).getName())
                 .setType(inp.getType().toString())
                 .build();
     }

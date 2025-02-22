@@ -9,6 +9,7 @@ import lombok.Data;
 public class DeviceAddedEventDto extends InputEventDto {
     @NotBlank
     String deviceType;
+
     @Override
     public InputEventTypeDto getType() {
         return InputEventTypeDto.DEVICE_ADDED;
