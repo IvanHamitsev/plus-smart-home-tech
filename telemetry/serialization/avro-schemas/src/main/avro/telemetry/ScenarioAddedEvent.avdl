@@ -1,0 +1,37 @@
+@namespace("ru.yandex.practicum.kafka.telemetry.event")
+protocol ScenarioAddedEventProtocol {
+    enum ScenarioConditionType {
+        MOTION, LUMINOSITY, SWITCH, TEMPERATURE, CO2LEVEL, HUMIDITY
+    }
+
+    enum ScenarioOperationType {
+        EQUALS, GREATER_THAN, LOWER_THAN
+    }
+
+    enum ActionType {
+        ACTIVATE, DEACTIVATE, INVERSE, SET_VALUE
+    }
+
+    record ScenarioCondition {
+        string sensorId;
+        ScenarioConditionType type;
+        ScenarioOperationType operation;
+        int value;
+    }
+
+    record DeviceAction {
+        string sensorId;
+        ActionType type;
+        int value;
+    }
+
+	record ScenarioAddedEvent {
+		string id;
+		string hub_id;
+		timestamp_ms timestamp;
+		string name;
+        array<ScenarioCondition> conditions;
+        array<DeviceAction> actions;
+		string type;
+	}
+}

@@ -1,0 +1,11 @@
+@namespace("ru.yandex.practicum.kafka.telemetry.event")
+protocol TemperatureSensorEventProtocol {
+	record TemperatureSensorEvent {
+		string id;
+		string hub_id;
+		timestamp_ms timestamp;
+		int temperatureC;
+		int temperatureF;
+		string type;
+	}
+}

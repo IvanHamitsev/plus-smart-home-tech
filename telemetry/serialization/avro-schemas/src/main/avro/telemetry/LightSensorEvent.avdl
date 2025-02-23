@@ -1,0 +1,11 @@
+@namespace("ru.yandex.practicum.kafka.telemetry.event")
+protocol LightSensorEventProtocol {
+	record LightSensorEvent {
+		string id;
+		string hub_id;
+		timestamp_ms timestamp;
+		int linkQuality;
+		int luminosity;
+		string type;
+	}
+}
