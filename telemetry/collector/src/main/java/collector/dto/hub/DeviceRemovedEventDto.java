@@ -9,6 +9,6 @@ public class DeviceRemovedEventDto extends InputEventDto {
 
     @Override
     public InputEventTypeDto getType() {
-        return InputEventTypeDto.DEVICE_REMOVED;
+        return InputEventTypeDto.DEVICE_REMOVED_EVENT;
     }
 }

@@ -12,6 +12,6 @@ public class ScenarioRemovedEventDto extends InputEventDto {
 
     @Override
     public InputEventTypeDto getType() {
-        return InputEventTypeDto.SCENARIO_REMOVED;
+        return InputEventTypeDto.SCENARIO_REMOVED_EVENT;
     }
 }

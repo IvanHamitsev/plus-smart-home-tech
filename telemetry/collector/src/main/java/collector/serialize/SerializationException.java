@@ -1,4 +1,4 @@
-package collector.serdes;
+package collector.serialize;
 
 public class SerializationException extends RuntimeException {
     public SerializationException(String message) {

@@ -26,7 +26,6 @@ protocol ScenarioAddedEventProtocol {
     }
 
 	record ScenarioAddedEvent {
-		string id;
 		string hub_id;
 		timestamp_ms timestamp;
 		string name;

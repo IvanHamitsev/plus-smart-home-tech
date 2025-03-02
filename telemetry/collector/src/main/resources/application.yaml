@@ -1,0 +1,14 @@
+spring:
+  main:
+    banner-mode: off
+    log-startup-info: false
+server:
+  port: 8083
+grpc:
+  server:
+    port: 9090
+collector:
+  kafkaHost: localhost
+  kafkaPort: 9092
+  sensorTopic: telemetry.sensors.v1
+  hubTopic: telemetry.hubs.v1

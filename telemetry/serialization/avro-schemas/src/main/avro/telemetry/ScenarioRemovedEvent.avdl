@@ -1,7 +1,6 @@
 @namespace("ru.yandex.practicum.kafka.telemetry.event")
 protocol ScenarioRemovedEventProtocol {
 	record ScenarioRemovedEvent {
-		string id;
 		string hub_id;
 		timestamp_ms timestamp;
 		string name;
