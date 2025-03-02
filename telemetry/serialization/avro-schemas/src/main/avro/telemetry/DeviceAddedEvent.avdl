@@ -1,7 +1,6 @@
 @namespace("ru.yandex.practicum.kafka.telemetry.event")
 protocol DeviceAddedEventProtocol {
 	record DeviceAddedEvent {
-		string id;
 		string hub_id;
 		timestamp_ms timestamp;
 		string deviceType;

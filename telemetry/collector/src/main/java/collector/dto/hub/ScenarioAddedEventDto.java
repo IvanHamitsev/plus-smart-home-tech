@@ -21,6 +21,6 @@ public class ScenarioAddedEventDto extends InputEventDto {
 
     @Override
     public InputEventTypeDto getType() {
-        return InputEventTypeDto.SCENARIO_ADDED;
+        return InputEventTypeDto.SCENARIO_ADDED_EVENT;
     }
 }

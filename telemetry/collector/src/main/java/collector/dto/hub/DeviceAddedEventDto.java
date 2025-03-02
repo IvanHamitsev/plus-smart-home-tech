@@ -12,6 +12,6 @@ public class DeviceAddedEventDto extends InputEventDto {
 
     @Override
     public InputEventTypeDto getType() {
-        return InputEventTypeDto.DEVICE_ADDED;
+        return InputEventTypeDto.DEVICE_ADDED_EVENT;
     }
 }

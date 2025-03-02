@@ -1,124 +1,141 @@
 package collector.mapper;
 
-import collector.dto.InputEventDto;
-import collector.dto.hub.*;
-import collector.dto.sensor.*;
+import collector.dto.enums.InputEventTypeDto;
+import ru.yandex.practicum.grpc.telemetry.event.DeviceActionProto;
+import ru.yandex.practicum.grpc.telemetry.event.HubEventProto;
+import ru.yandex.practicum.grpc.telemetry.event.ScenarioConditionProto;
+import ru.yandex.practicum.grpc.telemetry.event.SensorEventProto;
 import ru.yandex.practicum.kafka.telemetry.event.*;
 
-import java.util.List;
+import java.time.Instant;
 
 public class InputDtoMapper {
-    public static LightSensorEvent mapLightSensorEvent(InputEventDto inp) {
+    public static LightSensorEvent mapLightSensorEvent(SensorEventProto inp) {
+        Instant timeUTC = Instant.ofEpochSecond(inp.getTimestamp().getSeconds(), inp.getTimestamp().getNanos());
         return LightSensorEvent.newBuilder()
                 .setId(inp.getId())
                 .setHubId(inp.getHubId())
-                .setTimestamp(inp.getTimestamp())
-                .setLinkQuality(((LightSensorEventDto) inp).getLinkQuality())
-                .setLuminosity(((LightSensorEventDto) inp).getLuminosity())
-                .setType(inp.getType().toString())
+                .setTimestamp(timeUTC)
+                .setLinkQuality(inp.getLightSensorEvent().getLinkQuality())
+                .setLuminosity(inp.getLightSensorEvent().getLuminosity())
+                .setType(InputEventTypeDto.LIGHT_SENSOR_EVENT.toString())
                 .build();
     }
 
-    public static SwitchSensorEvent mapSwitchSensorEvent(InputEventDto inp) {
+    public static SwitchSensorEvent mapSwitchSensorEvent(SensorEventProto inp) {
+        Instant timeUTC = Instant.ofEpochSecond(inp.getTimestamp().getSeconds(), inp.getTimestamp().getNanos());
         return SwitchSensorEvent.newBuilder()
                 .setId(inp.getId())
                 .setHubId(inp.getHubId())
-                .setTimestamp(inp.getTimestamp())
-                .setState(((SwitchSensorEventDto) inp).getState())
-                .setType(inp.getType().toString())
+                .setTimestamp(timeUTC)
+                .setState(inp.getSwitchSensorEventOrBuilder().getState())
+                .setType(InputEventTypeDto.SWITCH_SENSOR_EVENT.toString())
                 .build();
     }
 
-    public static MotionSensorEvent mapMotionSensorEvent(InputEventDto inp) {
+    public static MotionSensorEvent mapMotionSensorEvent(SensorEventProto inp) {
+        Instant timeUTC = Instant.ofEpochSecond(inp.getTimestamp().getSeconds(), inp.getTimestamp().getNanos());
         return MotionSensorEvent.newBuilder()
                 .setId(inp.getId())
                 .setHubId(inp.getHubId())
-                .setTimestamp(inp.getTimestamp())
-                .setLinkQuality(((MotionSensorEventDto) inp).getLinkQuality())
-                .setMotion(((MotionSensorEventDto) inp).getMotion())
-                .setVoltage(((MotionSensorEventDto) inp).getVoltage())
-                .setType(inp.getType().toString())
+                .setTimestamp(timeUTC)
+                .setLinkQuality(inp.getMotionSensorEvent().getLinkQuality())
+                .setMotion(inp.getMotionSensorEvent().getMotion())
+                .setVoltage(inp.getMotionSensorEvent().getVoltage())
+                .setType(InputEventTypeDto.MOTION_SENSOR_EVENT.toString())
                 .build();
     }
 
-    public static TemperatureSensorEvent mapTemperatureSensorEvent(InputEventDto inp) {
+    public static TemperatureSensorEvent mapTemperatureSensorEvent(SensorEventProto inp) {
+        Instant timeUTC = Instant.ofEpochSecond(inp.getTimestamp().getSeconds(), inp.getTimestamp().getNanos());
         return TemperatureSensorEvent.newBuilder()
                 .setId(inp.getId())
                 .setHubId(inp.getHubId())
-                .setTimestamp(inp.getTimestamp())
-                .setTemperatureC(((TemperatureSensorEventDto) inp).getTemperatureC())
-                .setTemperatureF(((TemperatureSensorEventDto) inp).getTemperatureF())
-                .setType(inp.getType().toString())
+                .setTimestamp(timeUTC)
+                .setTemperatureC(inp.getTemperatureSensorEvent().getTemperatureC())
+                .setTemperatureF(inp.getTemperatureSensorEvent().getTemperatureF())
+                .setType(InputEventTypeDto.TEMPERATURE_SENSOR_EVENT.toString())
                 .build();
     }
 
-    public static ClimateSensorEvent mapClimateSensorEvent(InputEventDto inp) {
+    public static ClimateSensorEvent mapClimateSensorEvent(SensorEventProto inp) {
+        Instant timeUTC = Instant.ofEpochSecond(inp.getTimestamp().getSeconds(), inp.getTimestamp().getNanos());
         return ClimateSensorEvent.newBuilder()
                 .setId(inp.getId())
                 .setHubId(inp.getHubId())
-                .setTimestamp(inp.getTimestamp())
-                .setTemperatureC(((ClimateSensorEventDto) inp).getTemperatureC())
-                .setHumidity(((ClimateSensorEventDto) inp).getHumidity())
-                .setCo2Level(((ClimateSensorEventDto) inp).getCo2Level())
-                .setType(inp.getType().toString())
+                .setTimestamp(timeUTC)
+                .setTemperatureC(inp.getClimateSensorEvent().getTemperatureC())
+                .setHumidity(inp.getClimateSensorEvent().getHumidity())
+                .setCo2Level(inp.getClimateSensorEvent().getCo2Level())
+                .setType(InputEventTypeDto.CLIMATE_SENSOR_EVENT.toString())
                 .build();
     }
 
-    public static DeviceAddedEvent mapDeviceAddedEvent(InputEventDto inp) {
+    public static DeviceAddedEvent mapDeviceAddedEvent(HubEventProto inp) {
+        Instant timeUTC = Instant.ofEpochSecond(inp.getTimestamp().getSeconds(), inp.getTimestamp().getNanos());
         return DeviceAddedEvent.newBuilder()
-                .setId(inp.getId())
                 .setHubId(inp.getHubId())
-                .setTimestamp(inp.getTimestamp())
-                .setDeviceType(((DeviceAddedEventDto) inp).getDeviceType())
-                .setType(inp.getType().toString())
+                .setTimestamp(timeUTC)
+                .setDeviceType(inp.getDeviceAdded().getType().toString())
+                .setType(InputEventTypeDto.DEVICE_ADDED_EVENT.toString())
                 .build();
     }
 
-    public static DeviceRemovedEvent mapDeviceRemovedEvent(InputEventDto inp) {
+    public static DeviceRemovedEvent mapDeviceRemovedEvent(HubEventProto inp) {
+        Instant timeUTC = Instant.ofEpochSecond(inp.getTimestamp().getSeconds(), inp.getTimestamp().getNanos());
         return DeviceRemovedEvent.newBuilder()
-                .setId(inp.getId())
                 .setHubId(inp.getHubId())
-                .setTimestamp(inp.getTimestamp())
-                .setType(inp.getType().toString())
+                .setTimestamp(timeUTC)
+                .setType(InputEventTypeDto.DEVICE_REMOVED_EVENT.toString())
                 .build();
     }
 
-    public static ScenarioCondition mapScenarioCondition(ScenarioConditionDto inp) {
+    public static ScenarioCondition mapScenarioCondition(ScenarioConditionProto inp) {
+        int conditionValue;
+        if (inp.hasBoolValue()) {
+            conditionValue = inp.getBoolValue()?1:0;
+        } else {
+            conditionValue = inp.getIntValue();
+        }
         return ScenarioCondition.newBuilder()
                 .setSensorId(inp.getSensorId())
-                .setType(ScenarioConditionType.valueOf(inp.getType()))
-                .setOperation(ScenarioOperationType.valueOf(inp.getOperation()))
-                .setValue(inp.getValue())
+                .setType(ScenarioConditionType.valueOf(inp.getType().toString()))
+                .setOperation(ScenarioOperationType.valueOf(inp.getOperation().toString()))
+                .setValue(conditionValue)
                 .build();
     }
 
-    private static DeviceAction mapDeviceAction(DeviceActionDto inp) {
+    private static DeviceAction mapDeviceAction(DeviceActionProto inp) {
         return DeviceAction.newBuilder()
                 .setSensorId(inp.getSensorId())
-                .setType(ActionType.valueOf(inp.getType()))
+                .setType(ActionType.valueOf(inp.getType().toString()))
                 .setValue(inp.getValue())
                 .build();
     }
 
-    public static ScenarioAddedEvent mapScenarioAddedEvent(InputEventDto inp) {
+    public static ScenarioAddedEvent mapScenarioAddedEvent(HubEventProto inp) {
+        Instant timeUTC = Instant.ofEpochSecond(inp.getTimestamp().getSeconds(), inp.getTimestamp().getNanos());
+
+        var conditionsList = inp.getScenarioAdded().getConditionList().parallelStream().map(InputDtoMapper::mapScenarioCondition).toList();
+        var actionsList = inp.getScenarioAdded().getActionList().parallelStream().map(InputDtoMapper::mapDeviceAction).toList();
+
         return ScenarioAddedEvent.newBuilder()
-                .setId(inp.getId())
                 .setHubId(inp.getHubId())
-                .setTimestamp(inp.getTimestamp())
-                .setName(((ScenarioAddedEventDto) inp).getName())
-                .setConditions(List.copyOf(((ScenarioAddedEventDto) inp).getConditions().parallelStream().map(InputDtoMapper::mapScenarioCondition).toList()))
-                .setActions(List.copyOf(((ScenarioAddedEventDto) inp).getActions().parallelStream().map(InputDtoMapper::mapDeviceAction).toList()))
-                .setType(inp.getType().toString())
+                .setTimestamp(timeUTC)
+                .setName(inp.getScenarioAdded().getName())
+                .setConditions(conditionsList)
+                .setActions(actionsList)
+                .setType(InputEventTypeDto.SCENARIO_ADDED_EVENT.toString())
                 .build();
     }
 
-    public static ScenarioRemovedEvent mapScenarioRemovedEvent(InputEventDto inp) {
+    public static ScenarioRemovedEvent mapScenarioRemovedEvent(HubEventProto inp) {
+        Instant timeUTC = Instant.ofEpochSecond(inp.getTimestamp().getSeconds(), inp.getTimestamp().getNanos());
         return ScenarioRemovedEvent.newBuilder()
-                .setId(inp.getId())
                 .setHubId(inp.getHubId())
-                .setTimestamp(inp.getTimestamp())
-                .setName(((ScenarioRemovedEventDto) inp).getName())
-                .setType(inp.getType().toString())
+                .setTimestamp(timeUTC)
+                .setName(inp.getScenarioRemoved().getName())
+                .setType(InputEventTypeDto.SCENARIO_REMOVED_EVENT.toString())
                 .build();
     }
 }
