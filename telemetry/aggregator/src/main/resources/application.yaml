@@ -1,0 +1,9 @@
+spring:
+  main:
+    banner-mode: off
+    log-startup-info: false
+aggregator:
+  kafkaHost: localhost
+  kafkaPort: 9092
+  sensorTopic: telemetry.sensors.v1
+  snapshotTopic: telemetry.snapshots.v1
