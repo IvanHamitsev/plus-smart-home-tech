@@ -5,5 +5,6 @@ spring:
 aggregator:
   kafkaHost: localhost
   kafkaPort: 9092
+  groupId: snapshot
   sensorTopic: telemetry.sensors.v1
   snapshotTopic: telemetry.snapshots.v1

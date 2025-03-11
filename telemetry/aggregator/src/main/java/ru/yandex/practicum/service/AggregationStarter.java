@@ -39,6 +39,8 @@ public class AggregationStarter {
     String kafkaHost;
     @Value("${aggregator.kafkaPort:9092}")
     String kafkaPort;
+    @Value("${aggregator.groupId:snapshot}")
+    String groupIdConfig;
     @Value("${aggregator.sensorTopic}")
     String sensorTopic;
     @Value("${aggregator.snapshotTopic}")
@@ -58,6 +60,7 @@ public class AggregationStarter {
             Properties consumerConfig = new Properties();
             consumerConfig.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaHost + ":" + kafkaPort);
             consumerConfig.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+            consumerConfig.put(ConsumerConfig.GROUP_ID_CONFIG, groupIdConfig);
             consumerConfig.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
             consumerConfig.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, SensorEventDeserializer.class);
             consumer = new KafkaConsumer<>(consumerConfig);
