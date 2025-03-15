@@ -11,6 +11,7 @@ public class AggregatorApp
     {
         var context = SpringApplication.run(AggregatorApp.class, args);
         AggregationStarter aggregator = context.getBean(AggregationStarter.class);
+		// запуск цикла обработки входных сообщений датчиков
         aggregator.start();
     }
 }
