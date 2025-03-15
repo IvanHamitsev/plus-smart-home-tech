@@ -36,36 +36,29 @@ public class InputGrpcSerializer implements Serializer<Object> {
     public byte[] serializeSensor(String topic, SensorEventProto inpMessage) {
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             BinaryEncoder encoder = EncoderFactory.get().binaryEncoder(outputStream, null);
+            SensorEventAvro realEvent;
             switch (inpMessage.getPayloadCase()) {
                 case LIGHT_SENSOR_EVENT -> {
-                    LightSensorEvent realEvent = InputDtoMapper.mapLightSensorEvent(inpMessage);
-                    DatumWriter<LightSensorEvent> datumWriter = new SpecificDatumWriter<>(LightSensorEvent.class);
-                    datumWriter.write(realEvent, encoder);
+                    realEvent = InputDtoMapper.mapLightSensorEvent(inpMessage);
                 }
                 case SWITCH_SENSOR_EVENT -> {
-                    SwitchSensorEvent realEvent = InputDtoMapper.mapSwitchSensorEvent(inpMessage);
-                    DatumWriter<SwitchSensorEvent> datumWriter = new SpecificDatumWriter<>(SwitchSensorEvent.class);
-                    datumWriter.write(realEvent, encoder);
+                    realEvent = InputDtoMapper.mapSwitchSensorEvent(inpMessage);
                 }
                 case MOTION_SENSOR_EVENT -> {
-                    MotionSensorEvent realEvent = InputDtoMapper.mapMotionSensorEvent(inpMessage);
-                    DatumWriter<MotionSensorEvent> datumWriter = new SpecificDatumWriter<>(MotionSensorEvent.class);
-                    datumWriter.write(realEvent, encoder);
+                    realEvent = InputDtoMapper.mapMotionSensorEvent(inpMessage);
                 }
                 case TEMPERATURE_SENSOR_EVENT -> {
-                    TemperatureSensorEvent realEvent = InputDtoMapper.mapTemperatureSensorEvent(inpMessage);
-                    DatumWriter<TemperatureSensorEvent> datumWriter = new SpecificDatumWriter<>(TemperatureSensorEvent.class);
-                    datumWriter.write(realEvent, encoder);
+                    realEvent = InputDtoMapper.mapTemperatureSensorEvent(inpMessage);
                 }
                 case CLIMATE_SENSOR_EVENT -> {
-                    ClimateSensorEvent realEvent = InputDtoMapper.mapClimateSensorEvent(inpMessage);
-                    DatumWriter<ClimateSensorEvent> datumWriter = new SpecificDatumWriter<>(ClimateSensorEvent.class);
-                    datumWriter.write(realEvent, encoder);
+                    realEvent = InputDtoMapper.mapClimateSensorEvent(inpMessage);
                 }
                 default -> {
                     throw new SerializationException("Ошибка определения типа сенсора, переданного от Hub Router элемента SensorEventProto");
                 }
             }
+            DatumWriter<SensorEventAvro> datumWriter = new SpecificDatumWriter<>(SensorEventAvro.class);
+            datumWriter.write(realEvent, encoder);
             encoder.flush();
             return outputStream.toByteArray();
         } catch (

@@ -10,9 +10,11 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.errors.RecordDeserializationException;
 import org.apache.kafka.common.errors.WakeupException;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.kafka.telemetry.event.SensorEventAvro;
@@ -33,6 +35,7 @@ public class AggregationStarter {
     // ... объявление полей и конструктора ...
     Consumer<String, SensorEventAvro> consumer;
     Producer<String, SensorsSnapshotAvro> producer;
+    @Autowired
     AggregationProcess processor;
 
     @Value("${aggregator.kafkaHost:localhost}")
@@ -72,26 +75,30 @@ public class AggregationStarter {
             producerConfig.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
             producerConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, SensorsSnapshotSerializer.class);
             producer = new KafkaProducer<>(producerConfig);
-
+            ConsumerRecords<String, SensorEventAvro> records = null;
             // Цикл обработки событий
             while (true) {
                 // ... реализация цикла опроса ...
-                ConsumerRecords<String, SensorEventAvro> records =
-                        consumer.poll(Duration.ofMillis(100));
-                for (var sensorRecord : records) {
-                    log.info("Получено сообщение sensorEvent со смещением {}:\n{}\n",
-                            sensorRecord.offset(), sensorRecord.value());
-                    // ... и обработка полученных данных ...
-                    Optional<SensorsSnapshotAvro> snapshot = processor.pushSensorEvent(sensorRecord.value().getHubId(), sensorRecord.value());
-                    // если снапшот обновился, заслать его в топик снапшотов
-                    if (snapshot.isPresent()) {
-                        ProducerRecord<String, SensorsSnapshotAvro> snapshotRecord = new ProducerRecord<>(snapshotTopic, snapshot.get());
-                        producer.send(snapshotRecord);
+                try {
+                    records = consumer.poll(Duration.ofMillis(100));
+                    for (var sensorRecord : records) {
+                        log.info("Получено сообщение sensorEvent со смещением {}:\n{}\n",
+                                sensorRecord.offset(), sensorRecord.value());
+                        // ... и обработка полученных данных ...
+                        Optional<SensorsSnapshotAvro> snapshot = processor.pushSensorEvent(sensorRecord.value());
+                        // если снапшот обновился, заслать его в топик снапшотов
+                        if (snapshot.isPresent()) {
+                            ProducerRecord<String, SensorsSnapshotAvro> snapshotRecord = new ProducerRecord<>(snapshotTopic, snapshot.get());
+                            producer.send(snapshotRecord);
+                        }
                     }
+                    consumer.commitAsync();
+                } catch (RecordDeserializationException e) {
+                    log.error("Пропускаем неясную запись событий от датчиков {}", records);
+                    consumer.commitSync();
                 }
-                consumer.commitAsync();
-            }
 
+            }
         } catch (WakeupException ignored) {
             // игнорируем - закрываем консьюмер и продюсер в блоке finally
         } catch (Exception e) {
