@@ -37,7 +37,7 @@ protocol HubEventProtocol {
         string sensor_id;
         ConditionTypeAvro type;
         ConditionOperationAvro operation;
-        boolean? value = null;
+        int? value = null;
     }
 	
 	enum ActionTypeAvro {

@@ -8,7 +8,8 @@ import org.apache.avro.specific.SpecificDatumWriter;
 import org.apache.kafka.common.serialization.Serializer;
 import ru.yandex.practicum.grpc.telemetry.event.HubEventProto;
 import ru.yandex.practicum.grpc.telemetry.event.SensorEventProto;
-import ru.yandex.practicum.kafka.telemetry.event.*;
+import ru.yandex.practicum.kafka.telemetry.event.HubEventAvro;
+import ru.yandex.practicum.kafka.telemetry.event.SensorEventAvro;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -36,29 +37,29 @@ public class InputGrpcSerializer implements Serializer<Object> {
     public byte[] serializeSensor(String topic, SensorEventProto inpMessage) {
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             BinaryEncoder encoder = EncoderFactory.get().binaryEncoder(outputStream, null);
-            SensorEventAvro realEvent;
+            SensorEventAvro sensorEventAvro;
             switch (inpMessage.getPayloadCase()) {
                 case LIGHT_SENSOR_EVENT -> {
-                    realEvent = InputDtoMapper.mapLightSensorEvent(inpMessage);
+                    sensorEventAvro = InputDtoMapper.mapLightSensorEvent(inpMessage);
                 }
                 case SWITCH_SENSOR_EVENT -> {
-                    realEvent = InputDtoMapper.mapSwitchSensorEvent(inpMessage);
+                    sensorEventAvro = InputDtoMapper.mapSwitchSensorEvent(inpMessage);
                 }
                 case MOTION_SENSOR_EVENT -> {
-                    realEvent = InputDtoMapper.mapMotionSensorEvent(inpMessage);
+                    sensorEventAvro = InputDtoMapper.mapMotionSensorEvent(inpMessage);
                 }
                 case TEMPERATURE_SENSOR_EVENT -> {
-                    realEvent = InputDtoMapper.mapTemperatureSensorEvent(inpMessage);
+                    sensorEventAvro = InputDtoMapper.mapTemperatureSensorEvent(inpMessage);
                 }
                 case CLIMATE_SENSOR_EVENT -> {
-                    realEvent = InputDtoMapper.mapClimateSensorEvent(inpMessage);
+                    sensorEventAvro = InputDtoMapper.mapClimateSensorEvent(inpMessage);
                 }
                 default -> {
                     throw new SerializationException("Ошибка определения типа сенсора, переданного от Hub Router элемента SensorEventProto");
                 }
             }
             DatumWriter<SensorEventAvro> datumWriter = new SpecificDatumWriter<>(SensorEventAvro.class);
-            datumWriter.write(realEvent, encoder);
+            datumWriter.write(sensorEventAvro, encoder);
             encoder.flush();
             return outputStream.toByteArray();
         } catch (
@@ -70,31 +71,26 @@ public class InputGrpcSerializer implements Serializer<Object> {
     public byte[] serializeHub(String topic, HubEventProto inpMessage) {
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             BinaryEncoder encoder = EncoderFactory.get().binaryEncoder(outputStream, null);
+            HubEventAvro hubEventAvro;
             switch (inpMessage.getPayloadCase()) {
                 case DEVICE_ADDED -> {
-                    DeviceAddedEvent realEvent = InputDtoMapper.mapDeviceAddedEvent(inpMessage);
-                    DatumWriter<DeviceAddedEvent> datumWriter = new SpecificDatumWriter<>(DeviceAddedEvent.class);
-                    datumWriter.write(realEvent, encoder);
+                    hubEventAvro = InputDtoMapper.mapDeviceAddedEvent(inpMessage);
                 }
                 case DEVICE_REMOVED -> {
-                    DeviceRemovedEvent realEvent = InputDtoMapper.mapDeviceRemovedEvent(inpMessage);
-                    DatumWriter<DeviceRemovedEvent> datumWriter = new SpecificDatumWriter<>(DeviceRemovedEvent.class);
-                    datumWriter.write(realEvent, encoder);
+                    hubEventAvro = InputDtoMapper.mapDeviceRemovedEvent(inpMessage);
                 }
                 case SCENARIO_ADDED -> {
-                    ScenarioAddedEvent realEvent = InputDtoMapper.mapScenarioAddedEvent(inpMessage);
-                    DatumWriter<ScenarioAddedEvent> datumWriter = new SpecificDatumWriter<>(ScenarioAddedEvent.class);
-                    datumWriter.write(realEvent, encoder);
+                    hubEventAvro = InputDtoMapper.mapScenarioAddedEvent(inpMessage);
                 }
                 case SCENARIO_REMOVED -> {
-                    ScenarioRemovedEvent realEvent = InputDtoMapper.mapScenarioRemovedEvent(inpMessage);
-                    DatumWriter<ScenarioRemovedEvent> datumWriter = new SpecificDatumWriter<>(ScenarioRemovedEvent.class);
-                    datumWriter.write(realEvent, encoder);
+                    hubEventAvro = InputDtoMapper.mapScenarioRemovedEvent(inpMessage);
                 }
                 default -> {
                     throw new SerializationException("Ошибка определения типа сенсора, переданного от Hub Router элемента HubEventProto");
                 }
             }
+            DatumWriter<HubEventAvro> datumWriter = new SpecificDatumWriter<>(HubEventAvro.class);
+            datumWriter.write(hubEventAvro, encoder);
             encoder.flush();
             return outputStream.toByteArray();
         } catch (

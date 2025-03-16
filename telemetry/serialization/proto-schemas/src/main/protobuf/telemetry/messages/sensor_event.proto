@@ -11,7 +11,7 @@ import "google/protobuf/timestamp.proto";
 message SensorEventProto {
   string id = 1; // идентификатор датчика
   google.protobuf.Timestamp timestamp = 2; // таймстемп события
-  string hubId = 3; // идентификатор связанного хаба
+  string hub_id = 3; // идентификатор связанного хаба
     oneof payload {// данные события от конкретного устройства
     MotionSensorEvent motion_sensor_event = 4;            // данные события датчика движения
     TemperatureSensorEvent temperature_sensor_event = 5;  // данные события температурного датчика
