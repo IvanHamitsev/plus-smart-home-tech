@@ -8,7 +8,8 @@ import org.apache.avro.specific.SpecificDatumWriter;
 import org.apache.kafka.common.serialization.Serializer;
 import ru.yandex.practicum.grpc.telemetry.event.HubEventProto;
 import ru.yandex.practicum.grpc.telemetry.event.SensorEventProto;
-import ru.yandex.practicum.kafka.telemetry.event.*;
+import ru.yandex.practicum.kafka.telemetry.event.HubEventAvro;
+import ru.yandex.practicum.kafka.telemetry.event.SensorEventAvro;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -36,36 +37,29 @@ public class InputGrpcSerializer implements Serializer<Object> {
     public byte[] serializeSensor(String topic, SensorEventProto inpMessage) {
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             BinaryEncoder encoder = EncoderFactory.get().binaryEncoder(outputStream, null);
+            SensorEventAvro sensorEventAvro;
             switch (inpMessage.getPayloadCase()) {
                 case LIGHT_SENSOR_EVENT -> {
-                    LightSensorEvent realEvent = InputDtoMapper.mapLightSensorEvent(inpMessage);
-                    DatumWriter<LightSensorEvent> datumWriter = new SpecificDatumWriter<>(LightSensorEvent.class);
-                    datumWriter.write(realEvent, encoder);
+                    sensorEventAvro = InputDtoMapper.mapLightSensorEvent(inpMessage);
                 }
                 case SWITCH_SENSOR_EVENT -> {
-                    SwitchSensorEvent realEvent = InputDtoMapper.mapSwitchSensorEvent(inpMessage);
-                    DatumWriter<SwitchSensorEvent> datumWriter = new SpecificDatumWriter<>(SwitchSensorEvent.class);
-                    datumWriter.write(realEvent, encoder);
+                    sensorEventAvro = InputDtoMapper.mapSwitchSensorEvent(inpMessage);
                 }
                 case MOTION_SENSOR_EVENT -> {
-                    MotionSensorEvent realEvent = InputDtoMapper.mapMotionSensorEvent(inpMessage);
-                    DatumWriter<MotionSensorEvent> datumWriter = new SpecificDatumWriter<>(MotionSensorEvent.class);
-                    datumWriter.write(realEvent, encoder);
+                    sensorEventAvro = InputDtoMapper.mapMotionSensorEvent(inpMessage);
                 }
                 case TEMPERATURE_SENSOR_EVENT -> {
-                    TemperatureSensorEvent realEvent = InputDtoMapper.mapTemperatureSensorEvent(inpMessage);
-                    DatumWriter<TemperatureSensorEvent> datumWriter = new SpecificDatumWriter<>(TemperatureSensorEvent.class);
-                    datumWriter.write(realEvent, encoder);
+                    sensorEventAvro = InputDtoMapper.mapTemperatureSensorEvent(inpMessage);
                 }
                 case CLIMATE_SENSOR_EVENT -> {
-                    ClimateSensorEvent realEvent = InputDtoMapper.mapClimateSensorEvent(inpMessage);
-                    DatumWriter<ClimateSensorEvent> datumWriter = new SpecificDatumWriter<>(ClimateSensorEvent.class);
-                    datumWriter.write(realEvent, encoder);
+                    sensorEventAvro = InputDtoMapper.mapClimateSensorEvent(inpMessage);
                 }
                 default -> {
                     throw new SerializationException("Ошибка определения типа сенсора, переданного от Hub Router элемента SensorEventProto");
                 }
             }
+            DatumWriter<SensorEventAvro> datumWriter = new SpecificDatumWriter<>(SensorEventAvro.class);
+            datumWriter.write(sensorEventAvro, encoder);
             encoder.flush();
             return outputStream.toByteArray();
         } catch (
@@ -77,31 +71,26 @@ public class InputGrpcSerializer implements Serializer<Object> {
     public byte[] serializeHub(String topic, HubEventProto inpMessage) {
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             BinaryEncoder encoder = EncoderFactory.get().binaryEncoder(outputStream, null);
+            HubEventAvro hubEventAvro;
             switch (inpMessage.getPayloadCase()) {
                 case DEVICE_ADDED -> {
-                    DeviceAddedEvent realEvent = InputDtoMapper.mapDeviceAddedEvent(inpMessage);
-                    DatumWriter<DeviceAddedEvent> datumWriter = new SpecificDatumWriter<>(DeviceAddedEvent.class);
-                    datumWriter.write(realEvent, encoder);
+                    hubEventAvro = InputDtoMapper.mapDeviceAddedEvent(inpMessage);
                 }
                 case DEVICE_REMOVED -> {
-                    DeviceRemovedEvent realEvent = InputDtoMapper.mapDeviceRemovedEvent(inpMessage);
-                    DatumWriter<DeviceRemovedEvent> datumWriter = new SpecificDatumWriter<>(DeviceRemovedEvent.class);
-                    datumWriter.write(realEvent, encoder);
+                    hubEventAvro = InputDtoMapper.mapDeviceRemovedEvent(inpMessage);
                 }
                 case SCENARIO_ADDED -> {
-                    ScenarioAddedEvent realEvent = InputDtoMapper.mapScenarioAddedEvent(inpMessage);
-                    DatumWriter<ScenarioAddedEvent> datumWriter = new SpecificDatumWriter<>(ScenarioAddedEvent.class);
-                    datumWriter.write(realEvent, encoder);
+                    hubEventAvro = InputDtoMapper.mapScenarioAddedEvent(inpMessage);
                 }
                 case SCENARIO_REMOVED -> {
-                    ScenarioRemovedEvent realEvent = InputDtoMapper.mapScenarioRemovedEvent(inpMessage);
-                    DatumWriter<ScenarioRemovedEvent> datumWriter = new SpecificDatumWriter<>(ScenarioRemovedEvent.class);
-                    datumWriter.write(realEvent, encoder);
+                    hubEventAvro = InputDtoMapper.mapScenarioRemovedEvent(inpMessage);
                 }
                 default -> {
                     throw new SerializationException("Ошибка определения типа сенсора, переданного от Hub Router элемента HubEventProto");
                 }
             }
+            DatumWriter<HubEventAvro> datumWriter = new SpecificDatumWriter<>(HubEventAvro.class);
+            datumWriter.write(hubEventAvro, encoder);
             encoder.flush();
             return outputStream.toByteArray();
         } catch (

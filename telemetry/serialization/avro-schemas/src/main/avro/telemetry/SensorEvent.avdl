@@ -1,0 +1,50 @@
+@namespace("ru.yandex.practicum.kafka.telemetry.event")
+protocol SensorEventProtocol {
+
+	record MotionSensorAvro {
+		int link_quality;
+		// показатель качества связи; чем выше значение, тем лучше качество связи
+		boolean motion;
+		// указание на наличие движения или чьего-то присутствия
+		int voltage;
+		// значение напряжения, которое может использоваться для оценки текущего напряжения в сенсоре или связанном устройстве
+	}
+
+	record TemperatureSensorAvro {
+		int temperature_c;
+		// уровень температуры по шкале Цельсия
+		int temperature_f;// уровень температуры по Фаренгейту
+	}
+
+	record LightSensorAvro {
+		int link_quality;
+		// уровень сигнала
+		int luminosity;// уровень освещённости
+	}
+
+	record ClimateSensorAvro {
+		int temperature_c;
+		// уровень температуры по шкале Цельсия
+		int humidity;
+		// влажность
+		int co2_level;// уровень CO2
+	}
+
+	record SwitchSensorAvro {
+		boolean state;// состояние переключателя: включён/выключен
+	}
+
+	// Схема данных от сенсора
+	record SensorEventAvro {
+		string id;
+		string hub_id;
+		timestamp_ms timestamp;
+		union{
+			ClimateSensorAvro,
+			LightSensorAvro,
+			MotionSensorAvro,
+			SwitchSensorAvro,
+			TemperatureSensorAvro
+		} payload;
+	}
+}
