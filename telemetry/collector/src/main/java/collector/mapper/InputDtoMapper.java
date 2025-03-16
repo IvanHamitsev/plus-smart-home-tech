@@ -1,6 +1,5 @@
 package collector.mapper;
 
-import collector.dto.enums.InputEventTypeDto;
 import ru.yandex.practicum.grpc.telemetry.event.DeviceActionProto;
 import ru.yandex.practicum.grpc.telemetry.event.HubEventProto;
 import ru.yandex.practicum.grpc.telemetry.event.ScenarioConditionProto;
@@ -10,132 +9,124 @@ import ru.yandex.practicum.kafka.telemetry.event.*;
 import java.time.Instant;
 
 public class InputDtoMapper {
-    public static LightSensorEvent mapLightSensorEvent(SensorEventProto inp) {
+
+    private static SensorEventAvro buildSensorEventAvro(SensorEventProto inp, Object payload) {
         Instant timeUTC = Instant.ofEpochSecond(inp.getTimestamp().getSeconds(), inp.getTimestamp().getNanos());
-        return LightSensorEvent.newBuilder()
+        return SensorEventAvro.newBuilder()
                 .setId(inp.getId())
                 .setHubId(inp.getHubId())
                 .setTimestamp(timeUTC)
+                .setPayload(payload)
+                .build();
+    }
+
+    public static HubEventAvro buildHubEventAvro(HubEventProto inp, Object payload) {
+        Instant timeUTC = Instant.ofEpochSecond(inp.getTimestamp().getSeconds(), inp.getTimestamp().getNanos());
+        return HubEventAvro.newBuilder()
+                .setHubId(inp.getHubId())
+                .setTimestamp(timeUTC)
+                .setPayload(payload)
+                .build();
+    }
+
+    public static SensorEventAvro mapLightSensorEvent(SensorEventProto inp) {
+        LightSensorAvro payload = LightSensorAvro.newBuilder()
                 .setLinkQuality(inp.getLightSensorEvent().getLinkQuality())
                 .setLuminosity(inp.getLightSensorEvent().getLuminosity())
-                .setType(InputEventTypeDto.LIGHT_SENSOR_EVENT.toString())
                 .build();
+        return buildSensorEventAvro(inp, payload);
     }
 
-    public static SwitchSensorEvent mapSwitchSensorEvent(SensorEventProto inp) {
-        Instant timeUTC = Instant.ofEpochSecond(inp.getTimestamp().getSeconds(), inp.getTimestamp().getNanos());
-        return SwitchSensorEvent.newBuilder()
-                .setId(inp.getId())
-                .setHubId(inp.getHubId())
-                .setTimestamp(timeUTC)
-                .setState(inp.getSwitchSensorEventOrBuilder().getState())
-                .setType(InputEventTypeDto.SWITCH_SENSOR_EVENT.toString())
+    public static SensorEventAvro mapSwitchSensorEvent(SensorEventProto inp) {
+        SwitchSensorAvro payload = SwitchSensorAvro.newBuilder()
+                .setState(inp.getSwitchSensorEvent().getState())
                 .build();
+        return buildSensorEventAvro(inp, payload);
     }
 
-    public static MotionSensorEvent mapMotionSensorEvent(SensorEventProto inp) {
-        Instant timeUTC = Instant.ofEpochSecond(inp.getTimestamp().getSeconds(), inp.getTimestamp().getNanos());
-        return MotionSensorEvent.newBuilder()
-                .setId(inp.getId())
-                .setHubId(inp.getHubId())
-                .setTimestamp(timeUTC)
+    public static SensorEventAvro mapMotionSensorEvent(SensorEventProto inp) {
+        MotionSensorAvro payload = MotionSensorAvro.newBuilder()
                 .setLinkQuality(inp.getMotionSensorEvent().getLinkQuality())
                 .setMotion(inp.getMotionSensorEvent().getMotion())
                 .setVoltage(inp.getMotionSensorEvent().getVoltage())
-                .setType(InputEventTypeDto.MOTION_SENSOR_EVENT.toString())
                 .build();
+        return buildSensorEventAvro(inp, payload);
     }
 
-    public static TemperatureSensorEvent mapTemperatureSensorEvent(SensorEventProto inp) {
-        Instant timeUTC = Instant.ofEpochSecond(inp.getTimestamp().getSeconds(), inp.getTimestamp().getNanos());
-        return TemperatureSensorEvent.newBuilder()
-                .setId(inp.getId())
-                .setHubId(inp.getHubId())
-                .setTimestamp(timeUTC)
+    public static SensorEventAvro mapTemperatureSensorEvent(SensorEventProto inp) {
+        TemperatureSensorAvro payload = TemperatureSensorAvro.newBuilder()
                 .setTemperatureC(inp.getTemperatureSensorEvent().getTemperatureC())
                 .setTemperatureF(inp.getTemperatureSensorEvent().getTemperatureF())
-                .setType(InputEventTypeDto.TEMPERATURE_SENSOR_EVENT.toString())
                 .build();
+        return buildSensorEventAvro(inp, payload);
     }
 
-    public static ClimateSensorEvent mapClimateSensorEvent(SensorEventProto inp) {
-        Instant timeUTC = Instant.ofEpochSecond(inp.getTimestamp().getSeconds(), inp.getTimestamp().getNanos());
-        return ClimateSensorEvent.newBuilder()
-                .setId(inp.getId())
-                .setHubId(inp.getHubId())
-                .setTimestamp(timeUTC)
+    public static SensorEventAvro mapClimateSensorEvent(SensorEventProto inp) {
+        ClimateSensorAvro payload = ClimateSensorAvro.newBuilder()
                 .setTemperatureC(inp.getClimateSensorEvent().getTemperatureC())
                 .setHumidity(inp.getClimateSensorEvent().getHumidity())
                 .setCo2Level(inp.getClimateSensorEvent().getCo2Level())
-                .setType(InputEventTypeDto.CLIMATE_SENSOR_EVENT.toString())
                 .build();
+        return buildSensorEventAvro(inp, payload);
     }
 
-    public static DeviceAddedEvent mapDeviceAddedEvent(HubEventProto inp) {
-        Instant timeUTC = Instant.ofEpochSecond(inp.getTimestamp().getSeconds(), inp.getTimestamp().getNanos());
-        return DeviceAddedEvent.newBuilder()
-                .setHubId(inp.getHubId())
-                .setTimestamp(timeUTC)
-                .setDeviceType(inp.getDeviceAdded().getType().toString())
-                .setType(InputEventTypeDto.DEVICE_ADDED_EVENT.toString())
+    public static HubEventAvro mapDeviceAddedEvent(HubEventProto inp) {
+        DeviceAddedEventAvro payload = DeviceAddedEventAvro.newBuilder()
+                .setId(inp.getDeviceAdded().getId())
+                .setType(DeviceTypeAvro.valueOf(inp.getDeviceAdded().getType().toString()))
                 .build();
+        return buildHubEventAvro(inp, payload);
     }
 
-    public static DeviceRemovedEvent mapDeviceRemovedEvent(HubEventProto inp) {
-        Instant timeUTC = Instant.ofEpochSecond(inp.getTimestamp().getSeconds(), inp.getTimestamp().getNanos());
-        return DeviceRemovedEvent.newBuilder()
-                .setHubId(inp.getHubId())
-                .setTimestamp(timeUTC)
-                .setType(InputEventTypeDto.DEVICE_REMOVED_EVENT.toString())
+    public static HubEventAvro mapDeviceRemovedEvent(HubEventProto inp) {
+        DeviceRemovedEventAvro payload = DeviceRemovedEventAvro.newBuilder()
+                .setId(inp.getDeviceRemoved().getId())
                 .build();
+        return buildHubEventAvro(inp, payload);
     }
 
-    public static ScenarioCondition mapScenarioCondition(ScenarioConditionProto inp) {
+    public static ScenarioConditionAvro mapScenarioCondition(ScenarioConditionProto inp) {
         int conditionValue;
         if (inp.hasBoolValue()) {
-            conditionValue = inp.getBoolValue()?1:0;
+            conditionValue = inp.getBoolValue() ? 1 : 0;
         } else {
             conditionValue = inp.getIntValue();
         }
-        return ScenarioCondition.newBuilder()
+        return ScenarioConditionAvro.newBuilder()
                 .setSensorId(inp.getSensorId())
-                .setType(ScenarioConditionType.valueOf(inp.getType().toString()))
-                .setOperation(ScenarioOperationType.valueOf(inp.getOperation().toString()))
+                .setType(ConditionTypeAvro.valueOf(inp.getType().toString())) // It was ScenarioConditionType earlier
+                .setOperation(ConditionOperationAvro.valueOf(inp.getOperation().toString())) // It was ScenarioOperationType earlier
                 .setValue(conditionValue)
                 .build();
     }
 
-    private static DeviceAction mapDeviceAction(DeviceActionProto inp) {
-        return DeviceAction.newBuilder()
+    private static DeviceActionAvro mapDeviceAction(DeviceActionProto inp) {
+        return DeviceActionAvro.newBuilder()
                 .setSensorId(inp.getSensorId())
-                .setType(ActionType.valueOf(inp.getType().toString()))
+                .setType(ActionTypeAvro.valueOf(inp.getType().toString()))
                 .setValue(inp.getValue())
                 .build();
     }
 
-    public static ScenarioAddedEvent mapScenarioAddedEvent(HubEventProto inp) {
-        Instant timeUTC = Instant.ofEpochSecond(inp.getTimestamp().getSeconds(), inp.getTimestamp().getNanos());
+    public static HubEventAvro mapScenarioAddedEvent(HubEventProto inp) {
 
         var conditionsList = inp.getScenarioAdded().getConditionList().parallelStream().map(InputDtoMapper::mapScenarioCondition).toList();
         var actionsList = inp.getScenarioAdded().getActionList().parallelStream().map(InputDtoMapper::mapDeviceAction).toList();
 
-        return ScenarioAddedEvent.newBuilder()
-                .setHubId(inp.getHubId())
-                .setTimestamp(timeUTC)
+        ScenarioAddedEventAvro payload = ScenarioAddedEventAvro.newBuilder()
                 .setName(inp.getScenarioAdded().getName())
                 .setConditions(conditionsList)
                 .setActions(actionsList)
-                .setType(InputEventTypeDto.SCENARIO_ADDED_EVENT.toString())
                 .build();
+        return buildHubEventAvro(inp, payload);
     }
 
-    public static ScenarioRemovedEvent mapScenarioRemovedEvent(HubEventProto inp) {
-        Instant timeUTC = Instant.ofEpochSecond(inp.getTimestamp().getSeconds(), inp.getTimestamp().getNanos());
-        return ScenarioRemovedEvent.newBuilder()
-                .setHubId(inp.getHubId())
-                .setTimestamp(timeUTC)
+    public static HubEventAvro mapScenarioRemovedEvent(HubEventProto inp) {
+
+        ScenarioRemovedEventAvro payload = ScenarioRemovedEventAvro.newBuilder()
                 .setName(inp.getScenarioRemoved().getName())
-                .setType(InputEventTypeDto.SCENARIO_REMOVED_EVENT.toString())
                 .build();
+
+        return buildHubEventAvro(inp, payload);
     }
 }

@@ -2,13 +2,9 @@ spring:
   main:
     banner-mode: off
     log-startup-info: false
-server:
-  port: 8083
-grpc:
-  server:
-    port: 59091
-collector:
+aggregator:
   kafkaHost: localhost
   kafkaPort: 9092
+  groupId: snapshot
   sensorTopic: telemetry.sensors.v1
-  hubTopic: telemetry.hubs.v1
+  snapshotTopic: telemetry.snapshots.v1
