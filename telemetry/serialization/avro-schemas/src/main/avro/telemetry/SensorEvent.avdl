@@ -37,8 +37,8 @@ protocol SensorEventProtocol {
 	// Схема данных от сенсора
 	record SensorEventAvro {
 		string id;
+		string hub_id;
 		timestamp_ms timestamp;
-		string hubId;
 		union{
 			ClimateSensorAvro,
 			LightSensorAvro,

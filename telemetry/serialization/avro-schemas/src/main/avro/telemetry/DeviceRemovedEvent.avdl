@@ -1,8 +1,0 @@
-@namespace("ru.yandex.practicum.kafka.telemetry.event")
-protocol DeviceRemovedEventProtocol {
-	record DeviceRemovedEvent {
-		string hub_id;
-		timestamp_ms timestamp;
-		string type;
-	}
-}
