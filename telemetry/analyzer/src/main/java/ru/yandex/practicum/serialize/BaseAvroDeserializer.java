@@ -9,6 +9,7 @@ import org.apache.avro.specific.SpecificDatumReader;
 import org.apache.kafka.common.serialization.Deserializer;
 
 public class BaseAvroDeserializer<T extends SpecificRecordBase> implements Deserializer<T> {
+    // ....
     private final DatumReader<T> reader;
     private final DecoderFactory decoder;
 
@@ -17,20 +18,24 @@ public class BaseAvroDeserializer<T extends SpecificRecordBase> implements Deser
     }
 
     public BaseAvroDeserializer(DecoderFactory decoderFactory, Schema schema) {
+        // ...
         reader = new SpecificDatumReader<>(schema);
         decoder = decoderFactory;
     }
 
+    // ...
+
     @Override
     public T deserialize(String topic, byte[] data) {
+        // Код десериализации двоичных данных
         try {
-            if (data != null) {
-                BinaryDecoder d = decoder.binaryDecoder(data, null);
-                return this.reader.read(null, d);
+            if (null != data) {
+                BinaryDecoder decode = decoder.binaryDecoder(data, null);
+                return reader.read(null, decode);
             }
             return null;
         } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
+            throw new RuntimeException("Can't deserialize data from topic " + topic);
         }
     }
 }
