@@ -1,0 +1,35 @@
+spring:
+  main:
+    banner-mode: off
+    log-startup-info: false
+  jpa:
+    properties.hibernate.format-sql: true
+    hibernate:
+      ddl-auto: none
+    database: POSTGRESQL
+    show-sql: true
+  sql:
+    init:
+      mode: always
+  jackson:
+    serialization:
+      fail-on-empty-beans: false
+  datasource:
+    driverClassName: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/smart_home_analyzer
+    username: vxuser
+    password: vxpasswd
+analyzer:
+  kafkaHost: localhost
+  kafkaPort: 9092
+  hubGroupId: hubEvents
+  snapshotGroupId: snapshotEvents
+  snapshotTopic: telemetry.snapshots.v1
+  hubTopic: telemetry.hubs.v1
+grpc:
+  client:
+    hub-router:
+      address: static://localhost:59090
+      enableKeepAlive: true
+      keepAliveWithoutCalls: true
+      negotiationType: plaintext

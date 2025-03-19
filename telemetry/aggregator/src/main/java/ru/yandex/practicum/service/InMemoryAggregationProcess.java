@@ -18,7 +18,7 @@ public class InMemoryAggregationProcess implements AggregationProcess {
 
     public Optional<SensorsSnapshotAvro> pushSensorEvent(SensorEventAvro measure) {
 
-        if (measure == null) {
+        if (null == measure) {
             return Optional.empty();
         }
 

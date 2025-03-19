@@ -33,10 +33,10 @@ import java.util.Properties;
 public class AggregationStarter {
 
     // ... объявление полей и конструктора ...
-    Consumer<String, SensorEventAvro> consumer;
-    Producer<String, SensorsSnapshotAvro> producer;
+    private Consumer<String, SensorEventAvro> consumer;
+    private Producer<String, SensorsSnapshotAvro> producer;
     @Autowired
-    AggregationProcess processor;
+    private AggregationProcess processor;
 
     @Value("${aggregator.kafkaHost:localhost}")
     String kafkaHost;
