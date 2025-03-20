@@ -29,6 +29,7 @@ public class SimpleSnapshotProcess implements SnapshotProcess {
 
         var statesMap = event.getSensorsState();
         var scenariosList = scenarioRepository.findByHubId(event.getHubId());
+        log.info("Обработка снапшота для хаба {}", event.getHubId());
 
         boolean scenarioFits;
 
@@ -60,6 +61,8 @@ public class SimpleSnapshotProcess implements SnapshotProcess {
                     log.info("Отправляю сообщение {} сенсору {}", action.getId(), action.getActionSensor());
                     grpcClient.sendDeviceActionMessage(getRequest(event, scenario, action));
                 }
+            } else {
+                log.info("Сценарий {} не подошёл. Хаб {}", scenario.getName(), scenario.getHubId());
             }
         }
     }
