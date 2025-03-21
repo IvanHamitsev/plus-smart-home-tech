@@ -58,8 +58,9 @@ public class SimpleSnapshotProcess implements SnapshotProcess {
 
             if (scenarioFits) {
                 for (var action : scenario.getActions()) {
-                    log.info("Отправляю сообщение {} сенсору {}", action.getId(), action.getActionSensor());
-                    grpcClient.sendDeviceActionMessage(getRequest(event, scenario, action));
+                    var request = getRequest(event, scenario, action);
+                    log.info("Отправляю сообщение {} сенсору {}", action.getId(), action.getActionSensor().getId());
+                    grpcClient.sendDeviceActionMessage(request);
                 }
             } else {
                 log.info("Сценарий {} не подошёл. Хаб {}", scenario.getName(), scenario.getHubId());
