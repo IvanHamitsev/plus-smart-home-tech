@@ -89,6 +89,7 @@ public class AggregationStarter {
                         // если снапшот обновился, заслать его в топик снапшотов
                         if (snapshot.isPresent()) {
                             ProducerRecord<String, SensorsSnapshotAvro> snapshotRecord = new ProducerRecord<>(snapshotTopic, snapshot.get());
+                            log.info("Send ProducerRecord({}, hubId={})", snapshotTopic, snapshot.get().getHubId());
                             producer.send(snapshotRecord);
                             producer.flush();
                         }
