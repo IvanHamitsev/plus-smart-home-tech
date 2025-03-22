@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.grpc.telemetry.event.ActionTypeProto;
 import ru.yandex.practicum.grpc.telemetry.event.DeviceActionMessageProto;
 import ru.yandex.practicum.grpc.telemetry.event.DeviceActionProto;
-import ru.yandex.practicum.grpc.telemetry.hubrouter.HubRouterControllerGrpc;
 import ru.yandex.practicum.kafka.telemetry.event.SensorsSnapshotAvro;
 import ru.yandex.practicum.model.Action;
 import ru.yandex.practicum.model.Condition;
@@ -24,8 +23,7 @@ public class SimpleSnapshotProcess implements SnapshotProcess {
     final ScenarioRepository scenarioRepository;
 
     @Override
-    public void pushSnapshot(SensorsSnapshotAvro event,
-                             HubRouterControllerGrpc.HubRouterControllerBlockingStub grpcClient) {
+    public DeviceActionMessageProto pushSnapshot(SensorsSnapshotAvro event) {
 
         var statesMap = event.getSensorsState();
         var scenariosList = scenarioRepository.findByHubId(event.getHubId());
@@ -64,12 +62,13 @@ public class SimpleSnapshotProcess implements SnapshotProcess {
                             action.getActionSensor().getId(),
                             action
                     );
-                    grpcClient.sendDeviceActionMessage(request);
+                    return request;
                 }
             } else {
                 log.info("Сценарий {} не подошёл. Хаб {}\n{}", scenario.getName(), scenario.getHubId(), scenario);
             }
         }
+        return null;
     }
 
     private static DeviceActionMessageProto getRequest(SensorsSnapshotAvro sensorsSnapshotAvro, Scenario scenario, Action action) {

@@ -1,5 +1,7 @@
 package ru.yandex.practicum.service;
 
+import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.client.inject.GrpcClient;
@@ -14,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.grpc.telemetry.hubrouter.HubRouterControllerGrpc;
+import ru.yandex.practicum.grpc.telemetry.hubrouter.HubRouterControllerGrpc.HubRouterControllerBlockingStub;
 import ru.yandex.practicum.kafka.telemetry.event.SensorsSnapshotAvro;
 import ru.yandex.practicum.serialize.SnapshotDeserializer;
 
@@ -29,7 +32,7 @@ public class SnapshotAnalyzerStarter {
     private Consumer<String, SensorsSnapshotAvro> snapshotConsumer;
 
     @GrpcClient("hub-router")
-    private HubRouterControllerGrpc.HubRouterControllerBlockingStub grpcClient;
+    private HubRouterControllerBlockingStub grpcClient;
 
     @Autowired
     private SnapshotProcess processor;
@@ -55,13 +58,22 @@ public class SnapshotAnalyzerStarter {
             snapshotConsumer.subscribe(List.of(snapshotTopic));
             ConsumerRecords<String, SensorsSnapshotAvro> records = null;
 
+            ManagedChannel handMadeChannel = ManagedChannelBuilder
+                    .forTarget("localhost:59090")
+                    .usePlaintext().build();
+
+            grpcClient = HubRouterControllerGrpc.newBlockingStub(handMadeChannel);
+
             while (true) {
                 try {
                     records = snapshotConsumer.poll(Duration.ofMillis(100));
                     for (var record : records) {
                         log.info("Получено сообщение Snapshot со смещением {}:\n{}\n",
                                 record.offset(), record.value());
-                        processor.pushSnapshot(record.value(), grpcClient);
+                        var request = processor.pushSnapshot(record.value());
+                        if (null != request) {
+                            grpcClient.sendDeviceActionMessage(request);
+                        }
                     }
                     snapshotConsumer.commitAsync();
                 } catch (RecordDeserializationException e) {

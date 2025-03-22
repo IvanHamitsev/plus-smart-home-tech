@@ -16,7 +16,7 @@ spring:
       fail-on-empty-beans: false
   datasource:
     driverClassName: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:6432/smart_home_analyzer
+    url: jdbc:postgresql://localhost:5432/smart_home_analyzer
     username: vxuser
     password: vxpasswd
 logging.level.ru.yandex.practicum: "INFO"

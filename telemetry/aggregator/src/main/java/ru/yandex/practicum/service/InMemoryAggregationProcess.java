@@ -79,26 +79,4 @@ public class InMemoryAggregationProcess implements AggregationProcess {
 
         return Optional.of(snapshot);
     }
-
-    private boolean specialEquals(Object arg1, Object arg2) {
-        if (!arg1.getClass().equals(arg2.getClass())) {
-            return false;
-        }
-        // с помощью механизма рефлексии пройти по всем полям класса arg1
-        var filds = arg1.getClass().getDeclaredFields();
-
-        try {
-            for (Field field : filds) {
-                field.setAccessible(true);
-                var f1 = field.get(arg1);
-                var f2 = field.get(arg2);
-                if (!f1.equals(f2)) {
-                    return false;
-                }
-            }
-        } catch (IllegalAccessException e) {
-            return false;
-        }
-        return true;
-    }
 }
