@@ -5,8 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.grpc.telemetry.event.ActionTypeProto;
-import ru.yandex.practicum.grpc.telemetry.event.DeviceActionMessageProto;
 import ru.yandex.practicum.grpc.telemetry.event.DeviceActionProto;
+import ru.yandex.practicum.grpc.telemetry.event.DeviceActionRequest;
 import ru.yandex.practicum.kafka.telemetry.event.SensorsSnapshotAvro;
 import ru.yandex.practicum.model.Action;
 import ru.yandex.practicum.model.Condition;
@@ -23,7 +23,7 @@ public class SimpleSnapshotProcess implements SnapshotProcess {
     final ScenarioRepository scenarioRepository;
 
     @Override
-    public DeviceActionMessageProto pushSnapshot(SensorsSnapshotAvro event) {
+    public DeviceActionRequest pushSnapshot(SensorsSnapshotAvro event) {
 
         var statesMap = event.getSensorsState();
         var scenariosList = scenarioRepository.findByHubId(event.getHubId());
@@ -71,7 +71,7 @@ public class SimpleSnapshotProcess implements SnapshotProcess {
         return null;
     }
 
-    private static DeviceActionMessageProto getRequest(SensorsSnapshotAvro sensorsSnapshotAvro, Scenario scenario, Action action) {
+    private static DeviceActionRequest getRequest(SensorsSnapshotAvro sensorsSnapshotAvro, Scenario scenario, Action action) {
         var deviceAction = DeviceActionProto.newBuilder()
                 .setSensorId(action.getActionSensor().getId())
                 .setType(ActionTypeProto.valueOf(action.getType().name()))
@@ -83,7 +83,7 @@ public class SimpleSnapshotProcess implements SnapshotProcess {
                 .setNanos(Instant.now().getNano())
                 .build();
 
-        return DeviceActionMessageProto.newBuilder()
+        return DeviceActionRequest.newBuilder()
                 .setHubId(sensorsSnapshotAvro.getHubId())
                 .setScenarioName(scenario.getName())
                 .setAction(deviceAction)

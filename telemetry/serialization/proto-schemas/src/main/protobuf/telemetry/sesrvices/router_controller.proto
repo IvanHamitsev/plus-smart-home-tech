@@ -9,6 +9,6 @@ import "google/protobuf/empty.proto";
 import "telemetry/messages/hub_event.proto";
 
 service HubRouterController {
-  rpc sendDeviceActionMessage (service.collector.DeviceActionMessageProto)
+  rpc handleDeviceAction (service.collector.DeviceActionRequest)
       returns (google.protobuf.Empty);
 }

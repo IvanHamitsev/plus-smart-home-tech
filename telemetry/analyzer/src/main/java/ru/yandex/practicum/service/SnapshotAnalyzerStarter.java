@@ -1,7 +1,5 @@
 package ru.yandex.practicum.service;
 
-import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.client.inject.GrpcClient;
@@ -15,7 +13,6 @@ import org.apache.kafka.common.serialization.VoidDeserializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.grpc.telemetry.hubrouter.HubRouterControllerGrpc;
 import ru.yandex.practicum.grpc.telemetry.hubrouter.HubRouterControllerGrpc.HubRouterControllerBlockingStub;
 import ru.yandex.practicum.kafka.telemetry.event.SensorsSnapshotAvro;
 import ru.yandex.practicum.serialize.SnapshotDeserializer;
@@ -58,11 +55,13 @@ public class SnapshotAnalyzerStarter {
             snapshotConsumer.subscribe(List.of(snapshotTopic));
             ConsumerRecords<String, SensorsSnapshotAvro> records = null;
 
+            /*
             ManagedChannel handMadeChannel = ManagedChannelBuilder
                     .forTarget("localhost:59090")
                     .usePlaintext().build();
 
             grpcClient = HubRouterControllerGrpc.newBlockingStub(handMadeChannel);
+            */
 
             while (true) {
                 try {
@@ -72,7 +71,8 @@ public class SnapshotAnalyzerStarter {
                                 record.offset(), record.value());
                         var request = processor.pushSnapshot(record.value());
                         if (null != request) {
-                            grpcClient.sendDeviceActionMessage(request);
+                            //grpcClient.sendDeviceActionMessage(request);
+                            grpcClient.handleDeviceAction(request);
                         }
                     }
                     snapshotConsumer.commitAsync();
