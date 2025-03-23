@@ -31,19 +31,18 @@ public class PostgreHubEventProcess implements HubEventProcess {
 
         switch (payload) {
             case DeviceAddedEventAvro deviceAddedEventAvro -> {
-                if (sensorRepository.findByIdAndHubId(deviceAddedEventAvro.getId(), hubId).isEmpty()) {
+                //if (sensorRepository.findByIdAndHubId(deviceAddedEventAvro.getId(), hubId).isEmpty()) {
                     sensorRepository.save(new Sensor(deviceAddedEventAvro.getId(), hubId));
-                }
+                //}
             }
             case DeviceRemovedEventAvro deviceRemovedEventAvro ->
                     sensorRepository.deleteById(deviceRemovedEventAvro.getId());
             case ScenarioRemovedEventAvro scenarioRemovedEventAvro ->
                     scenarioRepository.deleteByHubIdAndName(hubId, scenarioRemovedEventAvro.getName());
             case ScenarioAddedEventAvro scenarioAddedEventAvro -> {
-                if (scenarioRepository.findByHubIdAndName(hubId, scenarioAddedEventAvro.getName()).isEmpty()) {
+                //if (scenarioRepository.findByHubIdAndName(hubId, scenarioAddedEventAvro.getName()).isEmpty()) {
                     scenarioRepository.save(getScenario(hubId, scenarioAddedEventAvro));
-                }
-
+                //}
             }
             case null -> throw new RuntimeException("Get empty payload of hub event");
             default -> throw new RuntimeException("Unknown type of hub event: " + payload.getClass());
