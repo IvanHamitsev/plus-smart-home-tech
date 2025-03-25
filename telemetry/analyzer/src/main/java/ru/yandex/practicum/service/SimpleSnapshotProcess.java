@@ -55,12 +55,12 @@ public class SimpleSnapshotProcess implements SnapshotProcess {
             }
 
             if (scenarioFits) {
+                log.info("Сценарий {} подошёл! Хаб {}", scenario.getName(), scenario.getHubId());
                 for (var action : scenario.getActions()) {
                     var request = getRequest(event, scenario, action);
-                    log.info("Отправляю сообщение {} сенсору {}\n{}",
+                    log.info("Отправляю сообщение {} сенсору {}",
                             action.getId(),
-                            action.getActionSensor().getId(),
-                            action
+                            action.getActionSensor().getId()
                     );
                     return request;
                 }

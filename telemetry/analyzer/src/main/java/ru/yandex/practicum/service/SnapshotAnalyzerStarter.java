@@ -28,7 +28,6 @@ public class SnapshotAnalyzerStarter {
 
     private Consumer<String, SensorsSnapshotAvro> snapshotConsumer;
 
-    @GrpcClient("hub-router")
     private HubRouterControllerBlockingStub grpcClient;
 
     @Autowired
@@ -42,6 +41,11 @@ public class SnapshotAnalyzerStarter {
     String groupIdConfig;
     @Value("${analyzer.snapshotTopic}")
     String snapshotTopic;
+
+    public SnapshotAnalyzerStarter(@GrpcClient("hub-router") HubRouterControllerBlockingStub grpcClient) {
+        //super();
+        this.grpcClient = grpcClient;
+    }
 
     public void start() {
         try {
@@ -73,6 +77,7 @@ public class SnapshotAnalyzerStarter {
                         if (null != request) {
                             //grpcClient.sendDeviceActionMessage(request);
                             grpcClient.handleDeviceAction(request);
+                            log.info("Сообщение по сценарию {} отправлено успешно", request.getScenarioName());
                         }
                     }
                     snapshotConsumer.commitAsync();
