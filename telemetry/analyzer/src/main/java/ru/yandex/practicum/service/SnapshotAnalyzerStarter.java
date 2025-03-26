@@ -13,6 +13,7 @@ import org.apache.kafka.common.serialization.VoidDeserializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.grpc.telemetry.event.DeviceActionRequest;
 import ru.yandex.practicum.grpc.telemetry.hubrouter.HubRouterControllerGrpc.HubRouterControllerBlockingStub;
 import ru.yandex.practicum.kafka.telemetry.event.SensorsSnapshotAvro;
 import ru.yandex.practicum.serialize.SnapshotDeserializer;
@@ -73,9 +74,8 @@ public class SnapshotAnalyzerStarter {
                     for (var record : records) {
                         log.info("Получено сообщение Snapshot со смещением {}:\n{}\n",
                                 record.offset(), record.value());
-                        var request = processor.pushSnapshot(record.value());
-                        if (null != request) {
-                            //grpcClient.sendDeviceActionMessage(request);
+                        var requestList = processor.pushSnapshot(record.value());
+                        for (DeviceActionRequest request : requestList) {
                             grpcClient.handleDeviceAction(request);
                             log.info("Сообщение по сценарию {} отправлено успешно", request.getScenarioName());
                         }

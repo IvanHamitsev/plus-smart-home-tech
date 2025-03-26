@@ -14,6 +14,8 @@ import ru.yandex.practicum.model.Scenario;
 import ru.yandex.practicum.repository.ScenarioRepository;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @Component
@@ -23,7 +25,7 @@ public class SimpleSnapshotProcess implements SnapshotProcess {
     final ScenarioRepository scenarioRepository;
 
     @Override
-    public DeviceActionRequest pushSnapshot(SensorsSnapshotAvro event) {
+    public List<DeviceActionRequest> pushSnapshot(SensorsSnapshotAvro event) {
 
         var statesMap = event.getSensorsState();
         var scenariosList = scenarioRepository.findByHubId(event.getHubId());
@@ -56,19 +58,21 @@ public class SimpleSnapshotProcess implements SnapshotProcess {
 
             if (scenarioFits) {
                 log.info("Сценарий {} подошёл! Хаб {}", scenario.getName(), scenario.getHubId());
+                var requestList = new ArrayList<DeviceActionRequest>();
                 for (var action : scenario.getActions()) {
                     var request = getRequest(event, scenario, action);
-                    log.info("Отправляю сообщение {} сенсору {}",
+                    log.info("Подготавливаю сообщение {} сенсору {}",
                             action.getId(),
                             action.getActionSensor().getId()
                     );
-                    return request;
+                    requestList.add(request);
                 }
+                return requestList;
             } else {
                 log.info("Сценарий {} не подошёл. Хаб {}\n{}", scenario.getName(), scenario.getHubId(), scenario);
             }
         }
-        return null;
+        return new ArrayList<DeviceActionRequest>();
     }
 
     private static DeviceActionRequest getRequest(SensorsSnapshotAvro sensorsSnapshotAvro, Scenario scenario, Action action) {
