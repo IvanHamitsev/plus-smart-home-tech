@@ -52,7 +52,7 @@ public class HubEventAnalyzerStarter implements Runnable {
 
             while (true) {
                 try {
-                    records = hubEventConsumer.poll(Duration.ofMillis(100));
+                    records = hubEventConsumer.poll(Duration.ofMillis(2000));
                     for (var record : records) {
                         log.info("Получено сообщение HubEvent со смещением {}:\n{}\n",
                                 record.offset(), record.value());

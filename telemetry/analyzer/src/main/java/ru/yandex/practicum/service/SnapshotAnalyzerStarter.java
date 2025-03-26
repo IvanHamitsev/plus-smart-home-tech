@@ -69,7 +69,7 @@ public class SnapshotAnalyzerStarter {
 
             while (true) {
                 try {
-                    records = snapshotConsumer.poll(Duration.ofMillis(100));
+                    records = snapshotConsumer.poll(Duration.ofMillis(500));
                     for (var record : records) {
                         log.info("Получено сообщение Snapshot со смещением {}:\n{}\n",
                                 record.offset(), record.value());
