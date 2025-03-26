@@ -13,7 +13,7 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.errors.RecordDeserializationException;
 import org.apache.kafka.common.errors.WakeupException;
 import org.apache.kafka.common.serialization.StringDeserializer;
-import org.apache.kafka.common.serialization.StringSerializer;
+import org.apache.kafka.common.serialization.VoidSerializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -33,10 +33,10 @@ import java.util.Properties;
 public class AggregationStarter {
 
     // ... объявление полей и конструктора ...
-    Consumer<String, SensorEventAvro> consumer;
-    Producer<String, SensorsSnapshotAvro> producer;
+    private Consumer<String, SensorEventAvro> consumer;
+    private Producer<String, SensorsSnapshotAvro> producer;
     @Autowired
-    AggregationProcess processor;
+    private AggregationProcess processor;
 
     @Value("${aggregator.kafkaHost:localhost}")
     String kafkaHost;
@@ -72,7 +72,7 @@ public class AggregationStarter {
             // Producer
             Properties producerConfig = new Properties();
             producerConfig.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaHost + ":" + kafkaPort);
-            producerConfig.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+            producerConfig.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, VoidSerializer.class); // or StringSerializer ?
             producerConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, SensorsSnapshotSerializer.class);
             producer = new KafkaProducer<>(producerConfig);
             ConsumerRecords<String, SensorEventAvro> records = null;
@@ -89,7 +89,9 @@ public class AggregationStarter {
                         // если снапшот обновился, заслать его в топик снапшотов
                         if (snapshot.isPresent()) {
                             ProducerRecord<String, SensorsSnapshotAvro> snapshotRecord = new ProducerRecord<>(snapshotTopic, snapshot.get());
+                            log.info("Send ProducerRecord({}, hubId={})", snapshotTopic, snapshot.get().getHubId());
                             producer.send(snapshotRecord);
+                            producer.flush();
                         }
                     }
                     consumer.commitAsync();

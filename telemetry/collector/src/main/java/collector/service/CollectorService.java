@@ -46,6 +46,7 @@ public class CollectorService implements AutoCloseable {
         Long timestamp = LocalDateTime.now().toInstant(ZoneOffset.UTC).toEpochMilli();
         ProducerRecord<String, Object> record = new ProducerRecord<>(sensorTopic, null, timestamp, measure.getHubId(), measure);
         kafkaProducer.send(record);
+        kafkaProducer.flush();
     }
 
     // отправка в топик telemetry.hubs.v1
@@ -53,6 +54,7 @@ public class CollectorService implements AutoCloseable {
         Long timestamp = LocalDateTime.now().toInstant(ZoneOffset.UTC).toEpochMilli();
         ProducerRecord<String, Object> record = new ProducerRecord<>(hubTopic, null, timestamp, action.getHubId(), action);
         kafkaProducer.send(record);
+        kafkaProducer.flush();
     }
 
     @Override
