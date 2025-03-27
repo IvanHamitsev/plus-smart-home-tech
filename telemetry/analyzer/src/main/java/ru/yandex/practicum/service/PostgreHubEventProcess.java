@@ -44,6 +44,10 @@ public class PostgreHubEventProcess implements HubEventProcess {
                 var existingScenario = scenarioRepository.findByHubIdAndName(hubId, scenarioAddedEventAvro.getName());
                 if (existingScenario.isEmpty()) {
                     scenarioRepository.save(getScenario(hubId, scenarioAddedEventAvro));
+                } else {
+                    existingScenario.get().setConditions(getConditions(scenarioAddedEventAvro.getConditions(), hubId));
+                    existingScenario.get().setActions(getActions(scenarioAddedEventAvro.getActions(), hubId));
+                    scenarioRepository.save(existingScenario.get());
                 }
             }
             case null -> throw new RuntimeException("Get empty payload of hub event");
