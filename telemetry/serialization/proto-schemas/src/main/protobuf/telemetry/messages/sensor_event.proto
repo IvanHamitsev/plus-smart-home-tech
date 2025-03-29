@@ -1,6 +1,7 @@
 syntax = "proto3";
 
-package telemetry.message.event;
+//package telemetry.message.event;
+package telemetry.service.collector;
 
 option java_multiple_files = true;
 option java_package = "ru.yandex.practicum.grpc.telemetry.event";
@@ -10,7 +11,7 @@ import "google/protobuf/timestamp.proto";
 message SensorEventProto {
   string id = 1; // идентификатор датчика
   google.protobuf.Timestamp timestamp = 2; // таймстемп события
-  string hubId = 3; // идентификатор связанного хаба
+  string hub_id = 3; // идентификатор связанного хаба
     oneof payload {// данные события от конкретного устройства
     MotionSensorEvent motion_sensor_event = 4;            // данные события датчика движения
     TemperatureSensorEvent temperature_sensor_event = 5;  // данные события температурного датчика
@@ -38,8 +39,8 @@ message LightSensorEvent {
 
 message ClimateSensorEvent {
   int32 temperature_c = 1;  // уровень температуры по шкале Цельсия
-  int32 humidity = 3;       // влажность
-  int32 co2_level = 5;      // уровень CO2
+  int32 humidity = 2;       // влажность
+  int32 co2_level = 3;      // уровень CO2
 }
 
 message SwitchSensorEvent {
