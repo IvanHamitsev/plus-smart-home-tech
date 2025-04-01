@@ -1,0 +1,16 @@
+spring:
+  main:
+    banner-mode: off
+    log-startup-info: false
+  application:
+    name: config-server
+  profiles:
+    active: native
+  cloud:
+    config:
+      server:
+        native:
+          searchLocations:
+            - classpath:config/telemetry/{application}
+server:
+  port: 8888
