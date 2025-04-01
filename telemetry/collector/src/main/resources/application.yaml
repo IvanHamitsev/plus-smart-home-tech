@@ -1,14 +1,11 @@
 spring:
-  main:
-    banner-mode: off
-    log-startup-info: false
-server:
-  port: 8083
-grpc:
-  server:
-    port: 59091
-collector:
-  kafkaHost: localhost
-  kafkaPort: 9092
-  sensorTopic: telemetry.sensors.v1
-  hubTopic: telemetry.hubs.v1
+  application:
+    name: collector
+  config:
+    import: configserver:http://localhost:8888
+  cloud:
+    config:
+      fail-fast: true
+      retry:
+        useRandomPolicy: true
+        max-interval: 6000
