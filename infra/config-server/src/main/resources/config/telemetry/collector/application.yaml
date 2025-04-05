@@ -7,6 +7,7 @@ server:
 grpc:
   server:
     port: 59091
+logging.level.ru.yandex.practicum: "INFO"
 collector:
   kafkaHost: localhost
   kafkaPort: 9092
