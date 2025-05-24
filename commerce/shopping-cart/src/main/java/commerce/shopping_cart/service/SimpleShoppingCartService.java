@@ -4,21 +4,29 @@ import commerce.interaction.dto.cart.ChangeQuantityRequest;
 import commerce.interaction.dto.cart.ShoppingCartDto;
 import commerce.interaction.exception.ForbiddenException;
 import commerce.interaction.exception.NotFoundException;
+import commerce.interaction.exception.ProductInShoppingCartLowQuantityInWarehouseException;
+import commerce.interaction.feign_clients.ShoppingCartFeignClient;
 import commerce.shopping_cart.mapper.CartMapper;
 import commerce.shopping_cart.model.Cart;
 import commerce.shopping_cart.repository.ShoppingCartRepository;
-import commerce.warehouse.service.WarehouseService;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+@Service
 public class SimpleShoppingCartService implements ShoppingCartService {
 
-    private ShoppingCartRepository cartRepository;
+    private final ShoppingCartRepository cartRepository;
     // обращения на склад
-    private WarehouseService warehouseService;
+    private final ShoppingCartFeignClient shoppingCartFeignClient;
+
+    public SimpleShoppingCartService(ShoppingCartRepository repository, ShoppingCartFeignClient shoppingCartFeignClient) {
+        this.cartRepository = repository;
+        this.shoppingCartFeignClient = shoppingCartFeignClient;
+    }
 
     @Override
     public ShoppingCartDto findCartByUsername(String username) {
@@ -34,7 +42,11 @@ public class SimpleShoppingCartService implements ShoppingCartService {
             cartRepository.save(cart);
             var cartDto = CartMapper.mapCart(cart);
             // надо проверить доступность на складе
-            warehouseService.checkCart(cartDto);
+            // Feign клиент сам не сгенерит исключение ProductInShoppingCartLowQuantityInWarehouseException
+            if (null == shoppingCartFeignClient.checkCart(cartDto)) {
+                throw new ProductInShoppingCartLowQuantityInWarehouseException(
+                        String.format("Cart of user %s contains low quantity products", username));
+            }
             return cartDto;
         } else {
             throw new ForbiddenException(String.format("Cart of user %s is blocked", username));
@@ -83,8 +95,11 @@ public class SimpleShoppingCartService implements ShoppingCartService {
             throw new NotFoundException(String.format("No productId %s in cart of user %s", request.getProductId(), username));
         }
         // и проверить доступность на складе
-        warehouseService.checkCart(CartMapper.mapCart(cart));
-
+        //warehouseService.checkCart(CartMapper.mapCart(cart));
+        if (null == shoppingCartFeignClient.checkCart(CartMapper.mapCart(cart))) {
+            throw new ProductInShoppingCartLowQuantityInWarehouseException(
+                    String.format("Cart of user %s contains low quantity products", username));
+        }
         cart.setProducts(productQuantityList);
         cartRepository.save(cart);
         return CartMapper.mapCart(cart);

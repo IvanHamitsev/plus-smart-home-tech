@@ -10,22 +10,26 @@ import commerce.interaction.dto.warehouse.ProductsDimensionsInfo;
 import commerce.interaction.exception.NoSpecifiedProductInWarehouseException;
 import commerce.interaction.exception.ProductInShoppingCartLowQuantityInWarehouseException;
 import commerce.interaction.exception.SpecifiedProductAlreadyInWarehouseException;
-import commerce.shopping_store.service.ShoppingStoreService;
+import commerce.interaction.feign_clients.WarehouseFeignClient;
 import commerce.warehouse.model.WarehouseMapper;
 import commerce.warehouse.repository.WarehouseRepository;
 import jakarta.transaction.Transactional;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-@AllArgsConstructor
 public class SimpleWarehouseService implements WarehouseService {
 
     private final WarehouseRepository repository;
-    // как правильно взаимодействовать с shopping store ?
-    ShoppingStoreService shoppingStoreService;
+    // правильно взаимодействовать с shopping store через feign клиент
+    //ShoppingStoreService shoppingStoreService;
+    private final WarehouseFeignClient warehouseFeignClient;
+
+    public SimpleWarehouseService(WarehouseRepository warehouseRepository, WarehouseFeignClient warehouseFeignClient) {
+        this.repository = warehouseRepository;
+        this.warehouseFeignClient = warehouseFeignClient;
+    }
 
     @Override
     @Transactional
@@ -67,7 +71,8 @@ public class SimpleWarehouseService implements WarehouseService {
 
         product.setQuantity(product.getQuantity() + request.getQuantity());
         repository.save(product);
-        shoppingStoreService.setQuantityState(new ProductQuantityStateRequest(request.getProductId(),
+        //shoppingStoreService.setQuantityState(...);
+        warehouseFeignClient.setQuantityState(new ProductQuantityStateRequest(request.getProductId(),
                 QuantityState.getFromInteger(product.getQuantity())));
     }
 
