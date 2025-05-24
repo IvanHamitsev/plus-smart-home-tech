@@ -45,7 +45,7 @@ public class SimpleShoppingStoreService implements ShoppingStoreService {
     }
 
     @Override
-    public boolean removeProduct(String productId) {
+    public void removeProduct(String productId) {
         log.info("Removing product with id {}", productId);
         Product currentProduct = repository.findById(productId).orElseThrow(
                 () -> new NotFoundException("No product with id = " + productId)
@@ -53,18 +53,16 @@ public class SimpleShoppingStoreService implements ShoppingStoreService {
         // удаление не настоящее, выставляется лишь статус
         currentProduct.setProductState(ProductState.DEACTIVATE);
         repository.save(currentProduct);
-        return true;
     }
 
     @Override
-    public boolean setQuantityState(ProductQuantityStateRequest request) {
+    public void setQuantityState(ProductQuantityStateRequest request) {
         log.info("Change quantity {} for product with id = {}", request.getQuantityState(), request.getProductId());
         Product currentProduct = repository.findById(request.getProductId()).orElseThrow(
                 () -> new NotFoundException("No product with id = " + request.getProductId())
         );
         currentProduct.setQuantityState(request.getQuantityState());
         repository.save(currentProduct);
-        return true;
     }
 
     @Override

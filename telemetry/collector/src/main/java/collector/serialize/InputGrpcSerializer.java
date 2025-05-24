@@ -6,10 +6,10 @@ import org.apache.avro.io.DatumWriter;
 import org.apache.avro.io.EncoderFactory;
 import org.apache.avro.specific.SpecificDatumWriter;
 import org.apache.kafka.common.serialization.Serializer;
-import commerce.shopping_store.grpc.telemetry.event.HubEventProto;
-import commerce.shopping_store.grpc.telemetry.event.SensorEventProto;
-import commerce.shopping_store.kafka.telemetry.event.HubEventAvro;
-import commerce.shopping_store.kafka.telemetry.event.SensorEventAvro;
+import commerce.shopping_cart.grpc.telemetry.event.HubEventProto;
+import commerce.shopping_cart.grpc.telemetry.event.SensorEventProto;
+import commerce.shopping_cart.kafka.telemetry.event.HubEventAvro;
+import commerce.shopping_cart.kafka.telemetry.event.SensorEventAvro;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

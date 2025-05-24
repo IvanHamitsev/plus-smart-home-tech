@@ -34,13 +34,13 @@ public class ShoppingStoreController {
 
     // помним, что удаление не настоящее, а установка признака недоступности
     @PostMapping("/removeProductFromStore")
-    public boolean removeProduct(@RequestBody String productId) {
-        return service.removeProduct(productId);
+    public void removeProduct(@RequestBody String productId) {
+        service.removeProduct(productId);
     }
 
     @PostMapping("/quantityState")
-    public boolean setQuantityState(@RequestBody @Valid ProductQuantityStateRequest request) {
-        return service.setQuantityState(request);
+    public void setQuantityState(@RequestBody @Valid ProductQuantityStateRequest request) {
+        service.setQuantityState(request);
     }
 
     @GetMapping("/{productId}")
