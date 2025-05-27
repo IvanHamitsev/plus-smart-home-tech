@@ -14,6 +14,6 @@ spring:
       fail-on-empty-beans: false
   datasource:
     driverClassName: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5433/commerce-shopping-store
+    url: jdbc:postgresql://localhost:5433/commerce-shopping-cart
     username: vxuser
     password: vxpasswd
