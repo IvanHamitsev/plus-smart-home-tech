@@ -8,7 +8,7 @@ import commerce.interaction.exception.NotFoundException;
 import java.util.List;
 
 public interface ShoppingStoreService {
-    List<ProductDto> findProductByCategory(ProductCategory category);
+    List<ProductDto> findProductByCategory(ProductCategory productCategory);
 
     ProductDto createProduct(ProductDto productDto);
 

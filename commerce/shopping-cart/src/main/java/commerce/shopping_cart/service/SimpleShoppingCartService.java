@@ -5,10 +5,10 @@ import commerce.interaction.dto.cart.ShoppingCartDto;
 import commerce.interaction.exception.ForbiddenException;
 import commerce.interaction.exception.NotFoundException;
 import commerce.interaction.exception.ProductInShoppingCartLowQuantityInWarehouseException;
-import commerce.interaction.feign_clients.ShoppingCartFeignClient;
 import commerce.shopping_cart.mapper.CartMapper;
 import commerce.shopping_cart.model.Cart;
 import commerce.shopping_cart.repository.ShoppingCartRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,16 +17,12 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
+@AllArgsConstructor
 public class SimpleShoppingCartService implements ShoppingCartService {
 
     private final ShoppingCartRepository cartRepository;
     // обращения на склад
-    private final ShoppingCartFeignClient shoppingCartFeignClient;
-
-    public SimpleShoppingCartService(ShoppingCartRepository repository, ShoppingCartFeignClient shoppingCartFeignClient) {
-        this.cartRepository = repository;
-        this.shoppingCartFeignClient = shoppingCartFeignClient;
-    }
+    private final LocalShoppingCartFeignClient shoppingCartFeignClient;
 
     @Override
     public ShoppingCartDto findCartByUsername(String username) {
@@ -55,7 +51,7 @@ public class SimpleShoppingCartService implements ShoppingCartService {
 
     @Override
     public void changeCartActivity(String username, boolean way) {
-        var cart = cartRepository.findByUsername(username).orElseThrow(
+        var cart = cartRepository.findByOwner(username).orElseThrow(
                 () -> new NotFoundException(String.format("No cart for user %s exists", username)));
         cart.setIsActivate(way);
         cartRepository.save(cart);
@@ -63,7 +59,7 @@ public class SimpleShoppingCartService implements ShoppingCartService {
 
     @Override
     public ShoppingCartDto resetProducts(String username, Map<String, Integer> productsMap) {
-        var cart = cartRepository.findByUsername(username).orElseThrow(
+        var cart = cartRepository.findByOwner(username).orElseThrow(
                 () -> new NotFoundException(String.format("No cart for user %s exists", username)));
 
         var productsList = CartMapper.mapMapToListProducts(productsMap);
@@ -106,7 +102,7 @@ public class SimpleShoppingCartService implements ShoppingCartService {
     }
 
     private Cart getOrCreateCart(String username) {
-        return cartRepository.findByUsername(username).orElse(
+        return cartRepository.findByOwner(username).orElse(
                 // если нет корзины, создать
                 Cart.builder()
                         // где взять ID корзины?

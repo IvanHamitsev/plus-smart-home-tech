@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface ShoppingStoreRepository extends JpaRepository<Product, String> {
-    List<Product> findByCategory(ProductCategory category);
+    List<Product> findByProductCategory(ProductCategory productCategory); // ProductCategory or String argument ?
 }

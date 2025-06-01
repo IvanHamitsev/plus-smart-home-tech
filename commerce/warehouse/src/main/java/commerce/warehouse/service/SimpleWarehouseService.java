@@ -10,26 +10,31 @@ import commerce.interaction.dto.warehouse.ProductsDimensionsInfo;
 import commerce.interaction.exception.NoSpecifiedProductInWarehouseException;
 import commerce.interaction.exception.ProductInShoppingCartLowQuantityInWarehouseException;
 import commerce.interaction.exception.SpecifiedProductAlreadyInWarehouseException;
-import commerce.interaction.feign_clients.WarehouseFeignClient;
 import commerce.warehouse.model.WarehouseMapper;
 import commerce.warehouse.repository.WarehouseRepository;
 import jakarta.transaction.Transactional;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import java.security.SecureRandom;
+import java.util.Random;
 import org.springframework.stereotype.Service;
 
 @Service
+@AllArgsConstructor
 @Slf4j
 public class SimpleWarehouseService implements WarehouseService {
 
     private final WarehouseRepository repository;
     // правильно взаимодействовать с shopping store через feign клиент
     //ShoppingStoreService shoppingStoreService;
-    private final WarehouseFeignClient warehouseFeignClient;
+    private final LocalWarehouseFeignClient warehouseFeignClient;
 
-    public SimpleWarehouseService(WarehouseRepository warehouseRepository, WarehouseFeignClient warehouseFeignClient) {
-        this.repository = warehouseRepository;
-        this.warehouseFeignClient = warehouseFeignClient;
-    }
+    private static final String[] ADDRESSES =
+            new String[] {"ADDRESS_1", "ADDRESS_2"};
+
+    private static final String CURRENT_ADDRESS =
+            ADDRESSES[Random.from(new SecureRandom()).nextInt(0, 1)];
 
     @Override
     @Transactional
@@ -78,7 +83,6 @@ public class SimpleWarehouseService implements WarehouseService {
 
     @Override
     public AddressDto getAddress() {
-        // откуда брать адрес?
-        return new AddressDto("Country", "City", "Street", "25", "5");
+        return new AddressDto(CURRENT_ADDRESS, CURRENT_ADDRESS, CURRENT_ADDRESS, CURRENT_ADDRESS, CURRENT_ADDRESS);
     }
 }

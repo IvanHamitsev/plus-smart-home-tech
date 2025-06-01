@@ -21,9 +21,9 @@ public class SimpleShoppingStoreService implements ShoppingStoreService {
     private final ShoppingStoreRepository repository;
 
     @Override
-    public List<ProductDto> findProductByCategory(ProductCategory category) {
-        log.info("Get products for category {}", category);
-        return repository.findByCategory(category).parallelStream()
+    public List<ProductDto> findProductByCategory(ProductCategory productCategory) {
+        log.info("Get products for category {}", productCategory);
+        return repository.findByProductCategory(productCategory).parallelStream()
                 .map(ProductMapper::mapProduct)
                 .toList();
     }

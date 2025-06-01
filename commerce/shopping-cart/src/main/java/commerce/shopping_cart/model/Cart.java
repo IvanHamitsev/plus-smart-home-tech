@@ -1,9 +1,7 @@
 package commerce.shopping_cart.model;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.util.List;
@@ -11,6 +9,8 @@ import java.util.List;
 @Entity
 @Table(name = "shopping_cart")
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Cart {
