@@ -7,7 +7,7 @@ import lombok.experimental.FieldDefaults;
 import java.util.List;
 
 @Entity
-@Table(name = "shopping_cart")
+@Table(name = "commerce/shopping_cart")
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor

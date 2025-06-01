@@ -1,10 +1,10 @@
 package collector.mapper;
 
-import commerce.shopping_cart.grpc.telemetry.event.DeviceActionProto;
-import commerce.shopping_cart.grpc.telemetry.event.HubEventProto;
-import commerce.shopping_cart.grpc.telemetry.event.ScenarioConditionProto;
-import commerce.shopping_cart.grpc.telemetry.event.SensorEventProto;
-import commerce.shopping_cart.kafka.telemetry.event.*;
+import ru.yandex.practicum.grpc.telemetry.event.DeviceActionProto;
+import ru.yandex.practicum.grpc.telemetry.event.HubEventProto;
+import ru.yandex.practicum.grpc.telemetry.event.ScenarioConditionProto;
+import ru.yandex.practicum.grpc.telemetry.event.SensorEventProto;
+import ru.yandex.practicum.kafka.telemetry.event.*;
 
 import java.time.Instant;
 
