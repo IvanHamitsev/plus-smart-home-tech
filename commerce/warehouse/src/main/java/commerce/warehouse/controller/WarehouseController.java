@@ -1,10 +1,11 @@
 package commerce.warehouse.controller;
 
+import commerce.interaction.dto.cart.ShoppingCartDto;
 import commerce.interaction.dto.warehouse.AddProductToWarehouseRequest;
 import commerce.interaction.dto.warehouse.AddressDto;
-import commerce.interaction.dto.cart.ShoppingCartDto;
 import commerce.interaction.dto.warehouse.NewProductInWarehouseRequest;
 import commerce.interaction.dto.warehouse.ProductsDimensionsInfo;
+import commerce.interaction.rest_api.WarehouseRestApi;
 import commerce.warehouse.service.WarehouseService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -12,26 +13,30 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/warehouse")
 @AllArgsConstructor
-public class WarehouseController {
+public class WarehouseController implements WarehouseRestApi {
     private final WarehouseService service;
 
+    @Override
     @PutMapping
-    void createProduct(@RequestBody NewProductInWarehouseRequest request) {
+    public void createProduct(@RequestBody NewProductInWarehouseRequest request) {
         service.createProduct(request);
     }
 
+    @Override
     @PostMapping("/check")
-    ProductsDimensionsInfo checkCart(@RequestBody ShoppingCartDto cart) {
+    public ProductsDimensionsInfo checkCart(@RequestBody ShoppingCartDto cart) {
         return service.checkCart(cart);
     }
 
+    @Override
     @PostMapping("/add")
-    void addQuantity(@RequestBody AddProductToWarehouseRequest request) {
+    public void addQuantity(@RequestBody AddProductToWarehouseRequest request) {
         service.addQuantity(request);
     }
 
+    @Override
     @GetMapping("/address")
-    AddressDto getAddress() {
+    public AddressDto getAddress() {
         return service.getAddress();
     }
 }

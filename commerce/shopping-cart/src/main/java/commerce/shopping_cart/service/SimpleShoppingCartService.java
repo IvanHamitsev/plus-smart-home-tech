@@ -22,7 +22,7 @@ public class SimpleShoppingCartService implements ShoppingCartService {
 
     private final ShoppingCartRepository cartRepository;
     // обращения на склад
-    private final LocalShoppingCartFeignClient shoppingCartFeignClient;
+    private final LocalWarehouseFeign warehouseFeign;
 
     @Override
     public ShoppingCartDto findCartByUsername(String username) {
@@ -39,7 +39,7 @@ public class SimpleShoppingCartService implements ShoppingCartService {
             var cartDto = CartMapper.mapCart(cart);
             // надо проверить доступность на складе
             // Feign клиент сам не сгенерит исключение ProductInShoppingCartLowQuantityInWarehouseException
-            if (null == shoppingCartFeignClient.checkCart(cartDto)) {
+            if (null == warehouseFeign.checkCart(cartDto)) {
                 throw new ProductInShoppingCartLowQuantityInWarehouseException(
                         String.format("Cart of user %s contains low quantity products", username));
             }
@@ -92,7 +92,7 @@ public class SimpleShoppingCartService implements ShoppingCartService {
         }
         // и проверить доступность на складе
         //warehouseService.checkCart(CartMapper.mapCart(cart));
-        if (null == shoppingCartFeignClient.checkCart(CartMapper.mapCart(cart))) {
+        if (null == warehouseFeign.checkCart(CartMapper.mapCart(cart))) {
             throw new ProductInShoppingCartLowQuantityInWarehouseException(
                     String.format("Cart of user %s contains low quantity products", username));
         }

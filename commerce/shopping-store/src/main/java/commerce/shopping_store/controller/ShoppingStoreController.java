@@ -3,6 +3,7 @@ package commerce.shopping_store.controller;
 import commerce.interaction.dto.product.ProductCategory;
 import commerce.interaction.dto.product.ProductDto;
 import commerce.interaction.dto.product.ProductQuantityStateRequest;
+import commerce.interaction.rest_api.ShoppingStoreRestApi;
 import commerce.shopping_store.service.ShoppingStoreService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -13,19 +14,22 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/shopping-store")
 @AllArgsConstructor
-public class ShoppingStoreController {
+public class ShoppingStoreController implements ShoppingStoreRestApi {
     private final ShoppingStoreService service;
 
+    @Override
     @GetMapping
     public List<ProductDto> findProductByCategory(@RequestBody ProductCategory category) {
         return service.findProductByCategory(category);
     }
 
+    @Override
     @PutMapping
     public ProductDto createProduct(@RequestBody @Valid ProductDto productDto) {
         return service.createProduct(productDto);
     }
 
+    @Override
     @PostMapping
     // если не применять @Valid, можно не заполнять часть свойств
     public ProductDto updateProduct(@RequestBody ProductDto productDto) {
@@ -33,16 +37,19 @@ public class ShoppingStoreController {
     }
 
     // помним, что удаление не настоящее, а установка признака недоступности
+    @Override
     @PostMapping("/removeProductFromStore")
     public void removeProduct(@RequestBody String productId) {
         service.removeProduct(productId);
     }
 
+    @Override
     @PostMapping("/quantityState")
     public void setQuantityState(@RequestBody @Valid ProductQuantityStateRequest request) {
         service.setQuantityState(request);
     }
 
+    @Override
     @GetMapping("/{productId}")
     public ProductDto findProductById(@PathVariable String productId) {
         return service.findProductById(productId);
