@@ -14,7 +14,7 @@ public interface ShoppingStoreService {
 
     ProductDto updateProduct(ProductDto productDto) throws NotFoundException;
 
-    void removeProduct(String productId);
+    ProductDto removeProduct(String productId);
 
     void setQuantityState(ProductQuantityStateRequest request);
 

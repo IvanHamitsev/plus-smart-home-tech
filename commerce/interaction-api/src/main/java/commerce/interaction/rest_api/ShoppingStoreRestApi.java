@@ -14,7 +14,7 @@ public interface ShoppingStoreRestApi {
 
     ProductDto updateProduct(ProductDto productDto);
 
-    void removeProduct(String productId);
+    ProductDto removeProduct(String productId);
 
     void setQuantityState(ProductQuantityStateRequest request);
 

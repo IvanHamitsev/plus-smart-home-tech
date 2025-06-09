@@ -26,9 +26,8 @@ import org.springframework.stereotype.Service;
 public class SimpleWarehouseService implements WarehouseService {
 
     private final WarehouseRepository repository;
-    // правильно взаимодействовать с shopping store через feign клиент
-    //ShoppingStoreService shoppingStoreService;
-    private final LocalWarehouseFeignClient warehouseFeignClient;
+    // взаимодействовать с shopping store через feign клиент
+    private final LocalShoppingStoreFeign shoppingStoreFeign;
 
     private static final String[] ADDRESSES =
             new String[] {"ADDRESS_1", "ADDRESS_2"};
@@ -77,7 +76,7 @@ public class SimpleWarehouseService implements WarehouseService {
         product.setQuantity(product.getQuantity() + request.getQuantity());
         repository.save(product);
         //shoppingStoreService.setQuantityState(...);
-        warehouseFeignClient.setQuantityState(new ProductQuantityStateRequest(request.getProductId(),
+        shoppingStoreFeign.setQuantityState(new ProductQuantityStateRequest(request.getProductId(),
                 QuantityState.getFromInteger(product.getQuantity())));
     }
 

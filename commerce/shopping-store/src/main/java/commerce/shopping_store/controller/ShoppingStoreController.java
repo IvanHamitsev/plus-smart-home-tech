@@ -18,15 +18,22 @@ public class ShoppingStoreController implements ShoppingStoreRestApi {
     private final ShoppingStoreService service;
 
     @Override
+    @GetMapping("/{productId}")
+    public ProductDto findProductById(@PathVariable String productId) {
+        return service.findProductById(productId);
+    }
+
+    @Override
     @GetMapping
-    public List<ProductDto> findProductByCategory(@RequestBody ProductCategory category) {
+    public List<ProductDto> findProductByCategory(@RequestParam("category") ProductCategory category) {
         return service.findProductByCategory(category);
     }
 
     @Override
     @PutMapping
     public ProductDto createProduct(@RequestBody @Valid ProductDto productDto) {
-        return service.createProduct(productDto);
+        var retValue = service.createProduct(productDto);
+        return retValue;
     }
 
     @Override
@@ -39,19 +46,13 @@ public class ShoppingStoreController implements ShoppingStoreRestApi {
     // помним, что удаление не настоящее, а установка признака недоступности
     @Override
     @PostMapping("/removeProductFromStore")
-    public void removeProduct(@RequestBody String productId) {
-        service.removeProduct(productId);
+    public ProductDto removeProduct(@RequestBody String productId) {
+        return service.removeProduct(productId);
     }
 
     @Override
     @PostMapping("/quantityState")
     public void setQuantityState(@RequestBody @Valid ProductQuantityStateRequest request) {
         service.setQuantityState(request);
-    }
-
-    @Override
-    @GetMapping("/{productId}")
-    public ProductDto findProductById(@PathVariable String productId) {
-        return service.findProductById(productId);
     }
 }

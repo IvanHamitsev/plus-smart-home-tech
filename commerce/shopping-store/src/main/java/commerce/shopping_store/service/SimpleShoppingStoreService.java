@@ -11,8 +11,10 @@ import commerce.shopping_store.repository.ShoppingStoreRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -23,42 +25,56 @@ public class SimpleShoppingStoreService implements ShoppingStoreService {
     @Override
     public List<ProductDto> findProductByCategory(ProductCategory productCategory) {
         log.info("Get products for category {}", productCategory);
-        return repository.findByProductCategory(productCategory).parallelStream()
+
+        var firstList = repository.findByProductCategory(productCategory);
+        var returnVar = firstList.parallelStream()
                 .map(ProductMapper::mapProduct)
                 .toList();
+        return returnVar;
     }
 
     @Override
+    @Transactional
     public ProductDto createProduct(ProductDto productDto) {
         log.info("Save product {}", productDto.getProductName());
-        var product = repository.save(ProductMapper.mapProductDto(productDto));
+
+        var varForSave = ProductMapper.mapProductDto(productDto);
+        var product = repository.save(varForSave);
+
         return ProductMapper.mapProduct(product);
     }
 
     @Override
+    @Transactional
     public ProductDto updateProduct(ProductDto productDto) {
         log.info("Update product {}", productDto.getProductName());
-        Product currentProduct = repository.findById(productDto.getProductId()).orElseThrow(
+        Product currentProduct = repository.findById(UUID.fromString(productDto.getProductId())).orElseThrow(
                 () -> new NotFoundException("No product with id = " + productDto.getProductId())
         );
-        return ProductMapper.mapProduct(repository.save(ProductMapper.updateProduct(currentProduct, productDto)));
+        var savedProduct = repository.save(ProductMapper.updateProduct(currentProduct, productDto));
+        var returnValue = ProductMapper.mapProduct(savedProduct);
+        return returnValue;
     }
 
     @Override
-    public void removeProduct(String productId) {
+    @Transactional
+    public ProductDto removeProduct(String productId) {
         log.info("Removing product with id {}", productId);
-        Product currentProduct = repository.findById(productId).orElseThrow(
-                () -> new NotFoundException("No product with id = " + productId)
+        String finalProductId = productId.replaceAll("\"", "");
+        Product currentProduct = repository.findById(UUID.fromString(finalProductId)).orElseThrow(
+                () -> new NotFoundException("No product with id = " + finalProductId)
         );
-        // удаление не настоящее, выставляется лишь статус
+        // удаление не настоящее, выставляется лишь статус DEACTIVATE
         currentProduct.setProductState(ProductState.DEACTIVATE);
-        repository.save(currentProduct);
+        var returnDto = ProductMapper.mapProduct(repository.save(currentProduct));
+        return returnDto;
     }
 
     @Override
+    @Transactional
     public void setQuantityState(ProductQuantityStateRequest request) {
         log.info("Change quantity {} for product with id = {}", request.getQuantityState(), request.getProductId());
-        Product currentProduct = repository.findById(request.getProductId()).orElseThrow(
+        Product currentProduct = repository.findById(UUID.fromString(request.getProductId())).orElseThrow(
                 () -> new NotFoundException("No product with id = " + request.getProductId())
         );
         currentProduct.setQuantityState(request.getQuantityState());
@@ -67,9 +83,11 @@ public class SimpleShoppingStoreService implements ShoppingStoreService {
 
     @Override
     public ProductDto findProductById(String productId) {
-        log.info("Get product with id {}", productId);
-        return ProductMapper.mapProduct(repository.findById(productId).orElseThrow(
-                () -> new NotFoundException("No product with id = " + productId)
-        ));
+        log.info("Trying to get product with id {}", productId);
+        var product = repository.findById(UUID.fromString(productId));
+        if (product.isEmpty()) {
+            throw new NotFoundException("No product with id = " + productId);
+        }
+        return ProductMapper.mapProduct(product.get());
     }
 }

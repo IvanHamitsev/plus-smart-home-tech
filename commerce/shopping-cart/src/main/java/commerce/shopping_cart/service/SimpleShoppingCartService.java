@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
@@ -105,8 +104,7 @@ public class SimpleShoppingCartService implements ShoppingCartService {
         return cartRepository.findByOwner(username).orElse(
                 // если нет корзины, создать
                 Cart.builder()
-                        // где взять ID корзины?
-                        .cartId(UUID.randomUUID().toString())
+                        // ID корзины сгенерится в БД .cartId(UUID.randomUUID())
                         .owner(username)
                         .products(List.of())
                         .isActivate(true)

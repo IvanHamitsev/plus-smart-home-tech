@@ -1,5 +1,6 @@
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE TABLE IF NOT EXISTS product_in_warehouse (
-    id VARCHAR PRIMARY KEY,
+    id UUID PRIMARY KEY,
     fragile BOOLEAN,
     width FLOAT,
     height FLOAT,

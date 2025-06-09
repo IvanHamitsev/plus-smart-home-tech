@@ -3,8 +3,10 @@ package commerce.shopping_cart.model;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.UuidGenerator;
 
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "commerce/shopping_cart")
@@ -16,7 +18,9 @@ import java.util.List;
 public class Cart {
     @Id
     @Column(name = "id", nullable = false)
-    String cartId;
+    @GeneratedValue
+    @UuidGenerator
+    UUID cartId;
     @Column(nullable = false)
     String owner;
     @OneToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
