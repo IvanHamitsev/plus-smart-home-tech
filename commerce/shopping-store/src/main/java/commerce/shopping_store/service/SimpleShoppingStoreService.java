@@ -10,6 +10,8 @@ import commerce.shopping_store.model.Product;
 import commerce.shopping_store.repository.ShoppingStoreRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,10 +25,16 @@ public class SimpleShoppingStoreService implements ShoppingStoreService {
     private final ShoppingStoreRepository repository;
 
     @Override
-    public List<ProductDto> findProductByCategory(ProductCategory productCategory) {
+    public List<ProductDto> findProductByCategory(ProductCategory productCategory, Integer page, Integer size, String sort) {
         log.info("Get products for category {}", productCategory);
 
-        var firstList = repository.findByProductCategory(productCategory);
+        Pageable pageParams = PageRequest.of(page, size);
+        List<Product> firstList;
+        if (null == sort) {
+            firstList = repository.findByProductCategory(productCategory, pageParams);
+        } else {
+            firstList = repository.findByProductCategoryOrderByProductName(productCategory, pageParams);
+        }
         var returnVar = firstList.parallelStream()
                 .map(ProductMapper::mapProduct)
                 .toList();
@@ -72,13 +80,14 @@ public class SimpleShoppingStoreService implements ShoppingStoreService {
 
     @Override
     @Transactional
-    public void setQuantityState(ProductQuantityStateRequest request) {
+    public ProductDto setQuantityState(ProductQuantityStateRequest request) {
         log.info("Change quantity {} for product with id = {}", request.getQuantityState(), request.getProductId());
         Product currentProduct = repository.findById(UUID.fromString(request.getProductId())).orElseThrow(
                 () -> new NotFoundException("No product with id = " + request.getProductId())
         );
         currentProduct.setQuantityState(request.getQuantityState());
-        repository.save(currentProduct);
+        var result = ProductMapper.mapProduct(repository.save(currentProduct));
+        return result;
     }
 
     @Override

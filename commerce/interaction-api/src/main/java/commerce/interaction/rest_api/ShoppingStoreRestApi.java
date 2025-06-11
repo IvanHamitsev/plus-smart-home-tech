@@ -2,13 +2,12 @@ package commerce.interaction.rest_api;
 
 import commerce.interaction.dto.product.ProductCategory;
 import commerce.interaction.dto.product.ProductDto;
-import commerce.interaction.dto.product.ProductQuantityStateRequest;
 
 import java.util.List;
 
 public interface ShoppingStoreRestApi {
 
-    List<ProductDto> findProductByCategory(ProductCategory category);
+    List<ProductDto> findProductByCategory(ProductCategory category, Integer page, Integer size, String sort);
 
     ProductDto createProduct(ProductDto productDto);
 
@@ -16,7 +15,8 @@ public interface ShoppingStoreRestApi {
 
     ProductDto removeProduct(String productId);
 
-    void setQuantityState(ProductQuantityStateRequest request);
+    //void setQuantityState(ProductQuantityStateRequest request);
+    ProductDto setQuantityState(String productId, String quantityState);
 
     ProductDto findProductById(String productId);
 }

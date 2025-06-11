@@ -1,7 +1,7 @@
 package commerce.warehouse.service;
 
 import commerce.interaction.dto.cart.ShoppingCartDto;
-import commerce.interaction.dto.product.ProductQuantityStateRequest;
+import commerce.interaction.dto.product.ProductDto;
 import commerce.interaction.dto.product.QuantityState;
 import commerce.interaction.dto.warehouse.AddProductToWarehouseRequest;
 import commerce.interaction.dto.warehouse.AddressDto;
@@ -12,13 +12,13 @@ import commerce.interaction.exception.ProductInShoppingCartLowQuantityInWarehous
 import commerce.interaction.exception.SpecifiedProductAlreadyInWarehouseException;
 import commerce.warehouse.model.WarehouseMapper;
 import commerce.warehouse.repository.WarehouseRepository;
-import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
 import java.util.Random;
-import org.springframework.stereotype.Service;
+import java.util.UUID;
 
 @Service
 @AllArgsConstructor
@@ -30,28 +30,28 @@ public class SimpleWarehouseService implements WarehouseService {
     private final LocalShoppingStoreFeign shoppingStoreFeign;
 
     private static final String[] ADDRESSES =
-            new String[] {"ADDRESS_1", "ADDRESS_2"};
+            new String[]{"ADDRESS_1", "ADDRESS_2"};
 
     private static final String CURRENT_ADDRESS =
             ADDRESSES[Random.from(new SecureRandom()).nextInt(0, 1)];
 
     @Override
-    @Transactional
-    public void createProduct(NewProductInWarehouseRequest request) {
-        if (repository.existsById(request.getProductId())) {
+    public ProductDto createProduct(NewProductInWarehouseRequest request) {
+        if (repository.existsById(UUID.fromString(request.getProductId()))) {
             throw new SpecifiedProductAlreadyInWarehouseException(String.format("Product %s already stored", request.getProductId()));
         }
-        repository.save(WarehouseMapper.mapRequest(request));
+        return WarehouseMapper.mapProductInWarehouseToProductDto(repository.save(WarehouseMapper.mapRequest(request)));
     }
 
     @Override
     public ProductsDimensionsInfo checkCart(ShoppingCartDto cart) {
         if (cart.getProducts().entrySet().parallelStream()
                 .filter(element ->
-                        element.getValue() > repository.getQuantityById(element.getKey())
+                        element.getValue() > repository.getQuantityByProductId(UUID.fromString(element.getKey()))
                 )
                 .findAny().isEmpty()) {
-            var productsList = repository.findAllById(cart.getProducts().keySet());
+            var productsList = repository.findAllById(cart.getProducts().keySet().parallelStream()
+                    .map(UUID::fromString).toList());
             boolean sumFragile = false;
             double sumWeight = 0;
             double sumVolume = 0;
@@ -70,14 +70,19 @@ public class SimpleWarehouseService implements WarehouseService {
 
     @Override
     public void addQuantity(AddProductToWarehouseRequest request) {
-        var product = repository.findById(request.getProductId())
+
+        var allOfUs = repository.findAll();
+
+        var thisOne = repository.findById(UUID.fromString(request.getProductId()));
+
+        var product = repository.findById(UUID.fromString(request.getProductId()))
                 .orElseThrow(() -> new NoSpecifiedProductInWarehouseException("No product with id " + request.getProductId()));
 
-        product.setQuantity(product.getQuantity() + request.getQuantity());
+        product.setQuantity(product.getQuantity() + request.getQuantity()); // добавить дополнительное количество, или установить заданное в request количество?
         repository.save(product);
-        //shoppingStoreService.setQuantityState(...);
-        shoppingStoreFeign.setQuantityState(new ProductQuantityStateRequest(request.getProductId(),
-                QuantityState.getFromInteger(product.getQuantity())));
+
+        shoppingStoreFeign.setQuantityState(request.getProductId(), QuantityState.getFromInteger(product.getQuantity()).toString());
+        // status":404,"error":"Not Found","path":"/quantityState
     }
 
     @Override

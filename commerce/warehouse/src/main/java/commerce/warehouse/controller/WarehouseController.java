@@ -1,6 +1,7 @@
 package commerce.warehouse.controller;
 
 import commerce.interaction.dto.cart.ShoppingCartDto;
+import commerce.interaction.dto.product.ProductDto;
 import commerce.interaction.dto.warehouse.AddProductToWarehouseRequest;
 import commerce.interaction.dto.warehouse.AddressDto;
 import commerce.interaction.dto.warehouse.NewProductInWarehouseRequest;
@@ -18,8 +19,8 @@ public class WarehouseController implements WarehouseRestApi {
 
     @Override
     @PutMapping
-    public void createProduct(@RequestBody NewProductInWarehouseRequest request) {
-        service.createProduct(request);
+    public ProductDto createProduct(@RequestBody NewProductInWarehouseRequest request) {
+        return service.createProduct(request);
     }
 
     @Override

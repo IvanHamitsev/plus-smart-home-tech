@@ -2,22 +2,23 @@ package commerce.warehouse.model;
 
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.UuidGenerator;
+
+import java.util.UUID;
 
 @Entity
 @Table(name = "product_in_warehouse")
 @Data
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ProductInWarehouse {
     @Id
-    @Column(nullable = false)
-    String id;
+    @Column(name = "id")
+    UUID productId;
     Boolean fragile;
     @Column(nullable = false)
     Double width;

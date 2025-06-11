@@ -1,6 +1,7 @@
 package commerce.shopping_cart.service;
 
 import commerce.interaction.dto.cart.ShoppingCartDto;
+import commerce.interaction.dto.product.ProductDto;
 import commerce.interaction.dto.warehouse.AddProductToWarehouseRequest;
 import commerce.interaction.dto.warehouse.AddressDto;
 import commerce.interaction.dto.warehouse.NewProductInWarehouseRequest;
@@ -12,11 +13,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@FeignClient(name = "shopping-cart")
+@FeignClient(name = "warehouse", path = "/api/v1/warehouse")
 public interface LocalWarehouseFeign extends WarehouseRestApi {
     @Override
     @PutMapping
-    void createProduct(@RequestBody NewProductInWarehouseRequest request);
+    ProductDto createProduct(@RequestBody NewProductInWarehouseRequest request);
 
     @Override
     @PostMapping("/check")

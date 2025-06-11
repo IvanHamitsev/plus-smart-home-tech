@@ -3,6 +3,7 @@ package commerce.shopping_store.controller;
 import commerce.interaction.dto.product.ProductCategory;
 import commerce.interaction.dto.product.ProductDto;
 import commerce.interaction.dto.product.ProductQuantityStateRequest;
+import commerce.interaction.dto.product.QuantityState;
 import commerce.interaction.rest_api.ShoppingStoreRestApi;
 import commerce.shopping_store.service.ShoppingStoreService;
 import jakarta.validation.Valid;
@@ -25,8 +26,12 @@ public class ShoppingStoreController implements ShoppingStoreRestApi {
 
     @Override
     @GetMapping
-    public List<ProductDto> findProductByCategory(@RequestParam("category") ProductCategory category) {
-        return service.findProductByCategory(category);
+    public List<ProductDto> findProductByCategory(
+            @RequestParam("category") ProductCategory category,
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size,
+            @RequestParam(required = false) String sort) {
+        return service.findProductByCategory(category, page, size, sort);
     }
 
     @Override
@@ -52,7 +57,9 @@ public class ShoppingStoreController implements ShoppingStoreRestApi {
 
     @Override
     @PostMapping("/quantityState")
-    public void setQuantityState(@RequestBody @Valid ProductQuantityStateRequest request) {
-        service.setQuantityState(request);
+//    public void setQuantityState(@RequestBody @Valid ProductQuantityStateRequest request) {
+    public ProductDto setQuantityState(@RequestParam String productId, @RequestParam String quantityState) {
+        ProductQuantityStateRequest request = new ProductQuantityStateRequest(productId, QuantityState.valueOf(quantityState));
+        return service.setQuantityState(request);
     }
 }

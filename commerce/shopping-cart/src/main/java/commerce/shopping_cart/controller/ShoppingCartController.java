@@ -19,13 +19,13 @@ public class ShoppingCartController implements ShoppingCartRestApi {
 
     @GetMapping
     @Override
-    public ShoppingCartDto findCartByUsername(@NotBlank String username) {
+    public ShoppingCartDto findCartByUsername(@RequestParam String username) {
         return service.findCartByUsername(username);
     }
 
     @PutMapping
     @Override
-    public ShoppingCartDto addProducts(@NotBlank String username, Map<String, Integer> products) {
+    public ShoppingCartDto addProducts(@RequestParam String username, @RequestBody(required = false) Map<String, Integer> products) {
         return service.addProducts(username, products);
     }
 

@@ -32,6 +32,9 @@ public class CartMapper {
     }
 
     public static List<ProductQuantity> mapMapToListProducts(Map<String, Integer> products) {
+        if ((null == products) || (products.isEmpty())) {
+            return List.of();
+        }
         return products.entrySet().stream()
                 .map(element -> ProductQuantity.builder()
                         .productId(UUID.fromString(element.getKey())) // key не может быть null

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
@@ -101,14 +102,18 @@ public class SimpleShoppingCartService implements ShoppingCartService {
     }
 
     private Cart getOrCreateCart(String username) {
-        return cartRepository.findByOwner(username).orElse(
-                // если нет корзины, создать
-                Cart.builder()
-                        // ID корзины сгенерится в БД .cartId(UUID.randomUUID())
-                        .owner(username)
-                        .products(List.of())
-                        .isActivate(true)
-                        .build()
-        );
+        var optionalCart = cartRepository.findByOwner(username);
+
+        if (optionalCart.isEmpty()) {
+            var cart = Cart.builder()
+                    .owner(username)
+                    .products(List.of())
+                    .isActivate(true)
+                    .build();
+            // не забываем её реально создать
+            cartRepository.save(cart);
+            optionalCart = Optional.of(cart);
+        }
+        return optionalCart.get();
     }
 }
