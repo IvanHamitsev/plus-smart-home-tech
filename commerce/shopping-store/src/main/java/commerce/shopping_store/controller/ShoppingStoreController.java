@@ -8,9 +8,8 @@ import commerce.interaction.rest_api.ShoppingStoreRestApi;
 import commerce.shopping_store.service.ShoppingStoreService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/shopping-store")
@@ -26,10 +25,10 @@ public class ShoppingStoreController implements ShoppingStoreRestApi {
 
     @Override
     @GetMapping
-    public List<ProductDto> findProductByCategory(
+    public Page<ProductDto> findProductByCategory(
             @RequestParam("category") ProductCategory category,
-            @RequestParam(required = false) Integer page,
-            @RequestParam(required = false) Integer size,
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "10") Integer size,
             @RequestParam(required = false) String sort) {
         return service.findProductByCategory(category, page, size, sort);
     }

@@ -10,8 +10,7 @@ import commerce.shopping_store.model.Product;
 import commerce.shopping_store.repository.ShoppingStoreRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,20 +24,19 @@ public class SimpleShoppingStoreService implements ShoppingStoreService {
     private final ShoppingStoreRepository repository;
 
     @Override
-    public List<ProductDto> findProductByCategory(ProductCategory productCategory, Integer page, Integer size, String sort) {
+    public Page<ProductDto> findProductByCategory(ProductCategory productCategory, Integer page, Integer size, String sort) {
         log.info("Get products for category {}", productCategory);
-
-        Pageable pageParams = PageRequest.of(page, size);
-        List<Product> firstList;
+        Pageable pageParams;
         if (null == sort) {
-            firstList = repository.findByProductCategory(productCategory, pageParams);
+            pageParams = PageRequest.of(page, size);
         } else {
-            firstList = repository.findByProductCategoryOrderByProductName(productCategory, pageParams);
+            pageParams = PageRequest.of(page, size, Sort.Direction.ASC, sort);
         }
+        List<Product> firstList = repository.findByProductCategory(productCategory, pageParams);
         var returnVar = firstList.parallelStream()
                 .map(ProductMapper::mapProduct)
                 .toList();
-        return returnVar;
+        return new PageImpl<>(returnVar, pageParams, returnVar.size());
     }
 
     @Override

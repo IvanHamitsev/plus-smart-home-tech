@@ -1,14 +1,13 @@
 package commerce.shopping_store.service;
 
+import org.springframework.data.domain.Page;
 import commerce.interaction.dto.product.ProductCategory;
 import commerce.interaction.dto.product.ProductDto;
 import commerce.interaction.dto.product.ProductQuantityStateRequest;
 import commerce.interaction.exception.NotFoundException;
 
-import java.util.List;
-
 public interface ShoppingStoreService {
-    List<ProductDto> findProductByCategory(ProductCategory productCategory, Integer page, Integer size, String sort);
+    Page<ProductDto> findProductByCategory(ProductCategory productCategory, Integer page, Integer size, String sort);
 
     ProductDto createProduct(ProductDto productDto);
 

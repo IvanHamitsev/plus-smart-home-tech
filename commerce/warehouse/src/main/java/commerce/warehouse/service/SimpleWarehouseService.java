@@ -40,14 +40,24 @@ public class SimpleWarehouseService implements WarehouseService {
         if (repository.existsById(UUID.fromString(request.getProductId()))) {
             throw new SpecifiedProductAlreadyInWarehouseException(String.format("Product %s already stored", request.getProductId()));
         }
-        return WarehouseMapper.mapProductInWarehouseToProductDto(repository.save(WarehouseMapper.mapRequest(request)));
+        var product = repository.save(WarehouseMapper.mapRequest(request));
+        return WarehouseMapper.mapProductInWarehouseToProductDto(product);
     }
 
     @Override
     public ProductsDimensionsInfo checkCart(ShoppingCartDto cart) {
+
         if (cart.getProducts().entrySet().parallelStream()
-                .filter(element ->
-                        element.getValue() > repository.getQuantityByProductId(UUID.fromString(element.getKey()))
+                .filter(element -> {
+                            var askedQuantity = element.getValue();
+                            var product = repository.findById(UUID.fromString(element.getKey()));
+                            if (product.isPresent()) {
+                                return askedQuantity > product.get().getQuantity();
+                            } else {
+                                // если вообще нет такого товара - тоже плохой случай
+                                return true;
+                            }
+                        }
                 )
                 .findAny().isEmpty()) {
             var productsList = repository.findAllById(cart.getProducts().keySet().parallelStream()
@@ -70,19 +80,18 @@ public class SimpleWarehouseService implements WarehouseService {
 
     @Override
     public void addQuantity(AddProductToWarehouseRequest request) {
-
-        var allOfUs = repository.findAll();
-
-        var thisOne = repository.findById(UUID.fromString(request.getProductId()));
-
         var product = repository.findById(UUID.fromString(request.getProductId()))
                 .orElseThrow(() -> new NoSpecifiedProductInWarehouseException("No product with id " + request.getProductId()));
 
         product.setQuantity(product.getQuantity() + request.getQuantity()); // добавить дополнительное количество, или установить заданное в request количество?
         repository.save(product);
-
-        shoppingStoreFeign.setQuantityState(request.getProductId(), QuantityState.getFromInteger(product.getQuantity()).toString());
-        // status":404,"error":"Not Found","path":"/quantityState
+        // и сообщить в магазин, о новом количестве
+        try {
+            // возможно товар ещё не добавлен в витрину, магазин про него не знает
+            shoppingStoreFeign.setQuantityState(request.getProductId(), QuantityState.getFromInteger(product.getQuantity()).toString());
+        } catch (RuntimeException e) {
+            log.info("Данный товар {} ещё не выставлен в магазине", request.getProductId());
+        }
     }
 
     @Override

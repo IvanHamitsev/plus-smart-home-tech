@@ -3,11 +3,11 @@ package commerce.interaction.rest_api;
 import commerce.interaction.dto.product.ProductCategory;
 import commerce.interaction.dto.product.ProductDto;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
 
 public interface ShoppingStoreRestApi {
 
-    List<ProductDto> findProductByCategory(ProductCategory category, Integer page, Integer size, String sort);
+    Page<ProductDto> findProductByCategory(ProductCategory category, Integer page, Integer size, String sort);
 
     ProductDto createProduct(ProductDto productDto);
 
