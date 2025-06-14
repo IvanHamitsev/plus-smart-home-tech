@@ -1,0 +1,11 @@
+spring:
+  main:
+    banner-mode: off
+    log-startup-info: false
+logging.level.ru.yandex.practicum: "INFO"
+aggregator:
+  kafkaHost: localhost
+  kafkaPort: 9092
+  groupId: snapshot
+  sensorTopic: telemetry.sensors.v1
+  snapshotTopic: telemetry.snapshots.v1
