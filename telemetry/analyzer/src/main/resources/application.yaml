@@ -1,36 +1,18 @@
 spring:
-  main:
-    banner-mode: off
-    log-startup-info: false
-  jpa:
-    properties.hibernate.format-sql: true
-    hibernate:
-      ddl-auto: none
-    database: POSTGRESQL
-    show-sql: true
-  sql:
-    init:
-      mode: always
-  jackson:
-    serialization:
-      fail-on-empty-beans: false
-  datasource:
-    driverClassName: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/smart_home_analyzer
-    username: vxuser
-    password: vxpasswd
-logging.level.ru.yandex.practicum: "INFO"
-analyzer:
-  kafkaHost: localhost
-  kafkaPort: 9092
-  hubGroupId: hubEvents
-  snapshotGroupId: snapshotEvents
-  snapshotTopic: telemetry.snapshots.v1
-  hubTopic: telemetry.hubs.v1
-grpc:
+  application:
+    name: analyzer
+  config:
+    import: "configserver:"
+  cloud:
+    config:
+      fail-fast: true
+      retry:
+        useRandomPolicy: true
+        max-interval: 6000
+      discovery:
+        enabled: true
+        serviceId: config-server
+eureka:
   client:
-    hub-router:
-      address: localhost:59090
-      enableKeepAlive: true
-      keepAliveWithoutCalls: true
-      negotiationType: plaintext
+    serviceUrl:
+      defaultZone: http://${eureka.instance.hostname:localhost}:${eureka.instance.port:8761}/eureka/
