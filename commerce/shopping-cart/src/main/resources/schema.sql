@@ -1,15 +1,15 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 CREATE TABLE IF NOT EXISTS shopping_cart (
-    id UUID PRIMARY KEY,
-    owner VARCHAR,
-    is_activate BOOLEAN,
+    id UUID PRIMARY KEY NOT NULL,
+    owner VARCHAR NOT NULL,
+    is_activate BOOLEAN NOT NULL,
     UNIQUE(owner)
 );
 
 create TABLE IF NOT EXISTS product_quantity (
-    id UUID PRIMARY KEY,
-    quantity INTEGER
+    id UUID PRIMARY KEY NOT NULL,
+    quantity INTEGER NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS cart_products (

@@ -8,11 +8,13 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.UuidGenerator;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Entity
 @Table(name = "shopping_store_product")
-@Data
+@Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -37,5 +39,5 @@ public class Product {
     @Enumerated(EnumType.STRING)
     ProductCategory productCategory;
     @Column(nullable = false)
-    Float price;
+    BigDecimal price;
 }

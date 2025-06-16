@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
+import java.math.BigDecimal;
 
 @Data
 @Builder
@@ -25,5 +26,5 @@ public class ProductDto {
     ProductState productState;
     ProductCategory productCategory;
     @Min(0)
-    Float price;
+    BigDecimal price;
 }

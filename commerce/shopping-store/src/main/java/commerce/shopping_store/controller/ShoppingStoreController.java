@@ -56,7 +56,6 @@ public class ShoppingStoreController implements ShoppingStoreRestApi {
 
     @Override
     @PostMapping("/quantityState")
-//    public void setQuantityState(@RequestBody @Valid ProductQuantityStateRequest request) {
     public ProductDto setQuantityState(@RequestParam String productId, @RequestParam String quantityState) {
         ProductQuantityStateRequest request = new ProductQuantityStateRequest(productId, QuantityState.valueOf(quantityState));
         return service.setQuantityState(request);

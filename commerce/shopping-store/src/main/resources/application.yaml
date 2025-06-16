@@ -12,12 +12,6 @@ spring:
       retry:
         useRandomPolicy: true
         max-interval: 6000
-server.port: 0
-logging:
-  level:
-    org:
-      zalando:
-        logbook: TRACE
 eureka:
   client:
     registerWithEureka: true
