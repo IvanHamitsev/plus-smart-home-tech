@@ -1,14 +1,13 @@
-package commerce.warehouse.service;
+package commerce.interaction.rest_api;
 
 import commerce.interaction.dto.product.ProductCategory;
 import commerce.interaction.dto.product.ProductDto;
-import commerce.interaction.rest_api.ShoppingStoreRestApi;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 @FeignClient(name = "shopping-store", path = "/api/v1/shopping-store")
-public interface LocalShoppingStoreFeign extends ShoppingStoreRestApi {
+public interface ShoppingStoreFeign extends ShoppingStoreRestApi {
     @Override
     @GetMapping
     public Page<ProductDto> findProductByCategory(@RequestParam("category") ProductCategory category,

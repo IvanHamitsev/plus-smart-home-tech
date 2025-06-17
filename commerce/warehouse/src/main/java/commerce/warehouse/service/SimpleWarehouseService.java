@@ -10,6 +10,7 @@ import commerce.interaction.dto.warehouse.ProductsDimensionsInfo;
 import commerce.interaction.exception.NoSpecifiedProductInWarehouseException;
 import commerce.interaction.exception.ProductInShoppingCartLowQuantityInWarehouseException;
 import commerce.interaction.exception.SpecifiedProductAlreadyInWarehouseException;
+import commerce.interaction.rest_api.ShoppingStoreFeign;
 import commerce.warehouse.model.WarehouseMapper;
 import commerce.warehouse.repository.WarehouseRepository;
 import lombok.AllArgsConstructor;
@@ -27,7 +28,7 @@ public class SimpleWarehouseService implements WarehouseService {
 
     private final WarehouseRepository repository;
     // взаимодействовать с shopping store через feign клиент
-    private final LocalShoppingStoreFeign shoppingStoreFeign;
+    private final ShoppingStoreFeign shoppingStoreFeign;
 
     private static final String[] ADDRESSES =
             new String[]{"ADDRESS_1", "ADDRESS_2"};

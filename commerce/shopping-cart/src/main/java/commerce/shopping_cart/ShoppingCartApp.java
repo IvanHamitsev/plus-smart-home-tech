@@ -2,14 +2,10 @@ package commerce.shopping_cart;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
-import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @SpringBootApplication
-@EnableFeignClients
-@ConfigurationPropertiesScan
-@EnableDiscoveryClient
+@EnableFeignClients(basePackages = {"commerce.interaction.rest_api"})
 public class ShoppingCartApp {
     public static void main(String[] args) {
         SpringApplication.run(ShoppingCartApp.class, args);

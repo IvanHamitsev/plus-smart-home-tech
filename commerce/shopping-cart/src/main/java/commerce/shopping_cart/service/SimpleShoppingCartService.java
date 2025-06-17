@@ -6,6 +6,7 @@ import commerce.interaction.dto.warehouse.ProductsDimensionsInfo;
 import commerce.interaction.exception.ForbiddenException;
 import commerce.interaction.exception.NotFoundException;
 import commerce.interaction.exception.ProductInShoppingCartLowQuantityInWarehouseException;
+import commerce.interaction.rest_api.WarehouseFeign;
 import commerce.shopping_cart.mapper.CartMapper;
 import commerce.shopping_cart.model.Cart;
 import commerce.shopping_cart.repository.ProductQuantityRepository;
@@ -23,7 +24,7 @@ public class SimpleShoppingCartService implements ShoppingCartService {
     private final ShoppingCartRepository cartRepository;
     private final ProductQuantityRepository quantityRepository;
     // обращения на склад
-    private final LocalWarehouseFeign warehouseFeign;
+    private final WarehouseFeign warehouseFeign;
 
     @Override
     public ShoppingCartDto findCartByUsername(String username) {
