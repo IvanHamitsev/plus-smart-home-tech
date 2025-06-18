@@ -1,0 +1,15 @@
+spring:
+  main:
+    banner-mode: off
+    log-startup-info: false
+server:
+  port: 8083
+grpc:
+  server:
+    port: 59091
+logging.level.ru.yandex.practicum: "INFO"
+collector:
+  kafkaHost: localhost
+  kafkaPort: 9092
+  sensorTopic: telemetry.sensors.v1
+  hubTopic: telemetry.hubs.v1
