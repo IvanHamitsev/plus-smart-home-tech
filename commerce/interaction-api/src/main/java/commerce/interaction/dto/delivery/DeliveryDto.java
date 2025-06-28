@@ -1,0 +1,25 @@
+package commerce.interaction.dto.delivery;
+
+import commerce.interaction.dto.warehouse.AddressDto;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Data;
+import lombok.experimental.FieldDefaults;
+
+@Data
+@Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
+public class DeliveryDto {
+    @NotBlank
+    String deliveryId;
+    @NotNull
+    DeliveryState state;
+    @NotNull
+    AddressDto fromAddress;
+    @NotNull
+    AddressDto toAddress;
+    @NotNull
+    String orderId;
+}

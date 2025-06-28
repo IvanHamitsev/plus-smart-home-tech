@@ -3,10 +3,7 @@ package commerce.warehouse.service;
 import commerce.interaction.dto.cart.ShoppingCartDto;
 import commerce.interaction.dto.product.ProductDto;
 import commerce.interaction.dto.product.QuantityState;
-import commerce.interaction.dto.warehouse.AddProductToWarehouseRequest;
-import commerce.interaction.dto.warehouse.AddressDto;
-import commerce.interaction.dto.warehouse.NewProductInWarehouseRequest;
-import commerce.interaction.dto.warehouse.ProductsDimensionsInfo;
+import commerce.interaction.dto.warehouse.*;
 import commerce.interaction.exception.NoSpecifiedProductInWarehouseException;
 import commerce.interaction.exception.ProductInShoppingCartLowQuantityInWarehouseException;
 import commerce.interaction.exception.SpecifiedProductAlreadyInWarehouseException;
@@ -18,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
+import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
@@ -93,6 +91,19 @@ public class SimpleWarehouseService implements WarehouseService {
         } catch (RuntimeException e) {
             log.info("Данный товар {} ещё не выставлен в магазине", request.getProductId());
         }
+    }
+
+    public BookedProductsDto assemblyProducts(AssemblyProductsForOrderRequest request) {
+        // what ?
+        return null;
+    }
+
+    public void shippedToDelivery(ShippedToDeliveryRequest request) {
+        // what
+    }
+
+    public void acceptReturn(Map<String, Integer> products) {
+        // what
     }
 
     @Override

@@ -1,3 +1,7 @@
+deliveryPrice:
+  baseCost : 5.0
+  weightCoff: 0.3
+  volumeCoff: 0.2
 server.port: 0
 logging:
   level:
@@ -19,6 +23,6 @@ spring:
       fail-on-empty-beans: false
   datasource:
     driverClassName: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/commerce-warehouse
+    url: jdbc:postgresql://localhost:5432/commerce-delivery
     username: vxuser
     password: vxpasswd
