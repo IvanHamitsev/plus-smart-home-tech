@@ -1,19 +1,17 @@
 package commerce.interaction.dto.warehouse;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
 @Data
-@AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class AddressDto {
-    String country;
-    String city;
-    String street;
-    String house;
-    String flat;
+public class ShippedToDeliveryRequest {
+    @NotBlank
+    String orderId;
+    @NotBlank
+    String deliveryId;
 }

@@ -1,7 +1,8 @@
-package commerce.warehouse.model;
+package commerce.warehouse.mapper;
 
 import commerce.interaction.dto.product.ProductDto;
 import commerce.interaction.dto.warehouse.NewProductInWarehouseRequest;
+import commerce.warehouse.model.ProductInWarehouse;
 
 import java.util.UUID;
 

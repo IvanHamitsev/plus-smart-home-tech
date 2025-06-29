@@ -2,10 +2,9 @@ package commerce.interaction.rest_api;
 
 import commerce.interaction.dto.cart.ShoppingCartDto;
 import commerce.interaction.dto.product.ProductDto;
-import commerce.interaction.dto.warehouse.AddProductToWarehouseRequest;
-import commerce.interaction.dto.warehouse.AddressDto;
-import commerce.interaction.dto.warehouse.NewProductInWarehouseRequest;
-import commerce.interaction.dto.warehouse.ProductsDimensionsInfo;
+import commerce.interaction.dto.warehouse.*;
+
+import java.util.Map;
 
 public interface WarehouseRestApi {
 
@@ -14,6 +13,12 @@ public interface WarehouseRestApi {
     ProductDto createProduct(NewProductInWarehouseRequest request);
 
     void addQuantity(AddProductToWarehouseRequest request);
+
+    BookedProductsDto assemblyProductsForOrder(AssemblyProductsForOrderRequest request);
+
+    void acceptReturn(Map<String, Integer> products);
+
+    void shippedToDelivery(ShippedToDeliveryRequest request);
 
     AddressDto getAddress();
 }
