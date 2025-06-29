@@ -17,9 +17,9 @@ public class DeliveryDto {
     @NotNull
     DeliveryState state;
     @NotNull
+    String orderId;
+    @NotNull
     AddressDto fromAddress;
     @NotNull
     AddressDto toAddress;
-    @NotNull
-    String orderId;
 }

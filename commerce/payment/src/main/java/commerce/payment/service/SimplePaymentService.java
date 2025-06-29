@@ -14,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -23,7 +22,6 @@ import java.util.UUID;
 @Service
 @Setter
 @RequiredArgsConstructor
-@ConfigurationProperties
 public class SimplePaymentService implements PaymentService {
 
     private final PaymentRepository paymentRepository;
