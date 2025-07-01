@@ -10,7 +10,7 @@ import java.util.List;
 public interface OrderService {
     public List<OrderDto> getClientOrders(String username);
 
-    public OrderDto createNewOrder(CreateNewOrderRequest request);
+    public OrderDto createOrder(CreateNewOrderRequest request);
 
     public OrderDto productReturn(ProductReturnRequest request);
 

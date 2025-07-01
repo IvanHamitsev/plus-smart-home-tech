@@ -31,7 +31,7 @@ public class OrderController implements OrderRestApi {
     @PutMapping
     public OrderDto createNewOrder(@RequestBody CreateNewOrderRequest request) {
         log.info("Create new order. Cart {} ", request.getShoppingCart().getShoppingCartId());
-        return service.createNewOrder(request);
+        return service.createOrder(request);
     }
 
     @Override

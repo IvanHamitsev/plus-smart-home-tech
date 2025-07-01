@@ -5,7 +5,9 @@ import commerce.interaction.dto.order.CreateNewOrderRequest;
 import commerce.interaction.dto.order.OrderDto;
 import commerce.interaction.dto.order.OrderState;
 import commerce.interaction.dto.order.ProductReturnRequest;
+import commerce.interaction.dto.warehouse.AddressDto;
 import commerce.interaction.dto.warehouse.AssemblyProductsForOrderRequest;
+import commerce.interaction.dto.warehouse.BookedProductsDto;
 import commerce.interaction.exception.NoOrderFoundException;
 import commerce.interaction.exception.NotAuthorizedUserException;
 import commerce.interaction.rest_api.DeliveryFeign;
@@ -13,6 +15,7 @@ import commerce.interaction.rest_api.PaymentFeign;
 import commerce.interaction.rest_api.WarehouseFeign;
 import commerce.order.mapper.OrderMapper;
 import commerce.order.model.Order;
+import commerce.order.model.OrderProduct;
 import commerce.order.repository.OrderRepository;
 import lombok.AllArgsConstructor;
 import lombok.Setter;
@@ -20,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -47,33 +51,15 @@ public class SimpleOrderService implements OrderService {
     }
 
     @Override
-    public OrderDto createNewOrder(CreateNewOrderRequest request) {
-        var order = Order.builder()
-                .products(OrderMapper.mapToOrderProductList(request.getShoppingCart().getProducts()))
-                .state(OrderState.NEW)
-                .build();
+    public OrderDto createOrder(CreateNewOrderRequest request) {
+        // создать сущности
+        Order order = createNewOrder(request.getShoppingCart().getProducts());
+        DeliveryDto delivery = createOrderDelivery(order.getId().toString(), request.getDeliveryAddress());
+        BookedProductsDto booking = createWarehouseBooking(order.getId().toString(), order.getProducts());
 
-        var deliveryDto = deliveryFeign.planDelivery(DeliveryDto.builder()
-                // а нужен ли адрес from ? по сути заглушка
-                .fromAddress(warehouseFeign.getAddress())
-                .toAddress(request.getDeliveryAddress())
-                .orderId(order.getId().toString())
-                .build());
+        // заполнить заказ
+        order = fillOrderDetails(order, booking, delivery);
 
-        var booking = warehouseFeign.assemblyProductsForOrder(AssemblyProductsForOrderRequest.builder()
-                .orderId(order.getId().toString())
-                .products(OrderMapper.mapOrderProductList(order.getProducts()))
-                .build());
-
-        order.setDeliveryVolume(booking.getDeliveryVolume());
-        order.setDeliveryWeight(booking.getDeliveryWeight());
-        order.setFragile(booking.getFragile());
-        order.setProductPrice(paymentFeign.productCost(OrderMapper.mapOrder(order)));
-        order.setDeliveryPrice(deliveryFeign.getDeliveryCost(OrderMapper.mapOrder(order)));
-        order.setTotalPrice(paymentFeign.getTotalCost(OrderMapper.mapOrder(order)));
-        order.setDeliveryId(UUID.fromString(deliveryDto.getDeliveryId()));
-        // при сохранении заказа получим Id
-        order = repository.save(order);
         // отправить оплату
         paymentFeign.payment(OrderMapper.mapOrder(order));
         return OrderMapper.mapOrder(order);
@@ -81,9 +67,7 @@ public class SimpleOrderService implements OrderService {
 
     @Override
     public OrderDto productReturn(ProductReturnRequest request) {
-        var order = repository.findById(UUID.fromString(request.getOrderId())).orElseThrow(
-                () -> new NoOrderFoundException("No order with Id=" + request.getOrderId())
-        );
+        var order = getExistingOrder(request.getOrderId());
         // сформировать новый лист продуктов в заказе
         var newProductList = order.getProducts().stream()
                 // сначала peek-ом вычесть необходимое количество
@@ -109,71 +93,104 @@ public class SimpleOrderService implements OrderService {
         order.setDeliveryWeight(booking.getDeliveryWeight());
         order.setFragile(booking.getFragile());
         order.setState(OrderState.PRODUCT_RETURNED);
-
+        log.info("Order {} get status PRODUCT_RETURNED", order.getId().toString());
         return OrderMapper.mapOrder(repository.save(order));
     }
 
     @Override
     public OrderDto paymentResult(String orderId, OrderState paymentState) {
-        var order = repository.findById(UUID.fromString(orderId)).orElseThrow(
-                () -> new NoOrderFoundException("No order with Id " + orderId)
-        );
+        var order = getExistingOrder(orderId);
         order.setState(paymentState);
+        log.info("Payment for order {} get status {}", order.getId().toString(), paymentState);
         return OrderMapper.mapOrder(repository.save(order));
     }
 
     @Override
     public OrderDto deliveryResult(String orderId, OrderState orderState) {
-        var order = repository.findById(UUID.fromString(orderId)).orElseThrow(
-                () -> new NoOrderFoundException("No order with Id " + orderId)
-        );
+        var order = getExistingOrder(orderId);
         order.setState(orderState);
+        log.info("Delivery for order {} get status {}", orderId, orderState);
+
         return OrderMapper.mapOrder(repository.save(order));
     }
 
     @Override
     public OrderDto orderComplete(String orderId) {
-        var order = repository.findById(UUID.fromString(orderId)).orElseThrow(
-                () -> new NoOrderFoundException("No order with Id " + orderId)
-        );
-        // нужна проверка правил перехода из одного состояния в другое
+        var order = getExistingOrder(orderId);
         order.setState(OrderState.COMPLETED);
+        log.info("Order {} get state COMPLETE", orderId);
         return OrderMapper.mapOrder(repository.save(order));
     }
 
     @Override
     public OrderDto calculateTotalCost(String orderId) {
-        Order order = repository.findById(UUID.fromString(orderId)).orElseThrow(
-                () -> new NoOrderFoundException("No order with Id " + orderId)
-        );
+        var order = getExistingOrder(orderId);
         order.setTotalPrice(paymentFeign.getTotalCost(OrderMapper.mapOrder(order)));
+        log.info("Calculate total cost {} for order {}", order.getTotalPrice(), orderId);
         return OrderMapper.mapOrder(repository.save(order));
     }
 
     @Override
     public OrderDto calculateDeliveryCost(String orderId) {
-        Order order = repository.findById(UUID.fromString(orderId)).orElseThrow(
-                () -> new NoOrderFoundException("No order with Id " + orderId)
-        );
+        var order = getExistingOrder(orderId);
         order.setDeliveryPrice(deliveryFeign.getDeliveryCost(OrderMapper.mapOrder(order)));
+        log.info("Calculate cost of delivery {} for order {}", order.getDeliveryPrice(), orderId);
         return OrderMapper.mapOrder(repository.save(order));
     }
 
     @Override
     public OrderDto assemblyOk(String orderId) {
-        var order = repository.findById(UUID.fromString(orderId)).orElseThrow(
-                () -> new NoOrderFoundException("No order with Id " + orderId)
-        );
+        var order = getExistingOrder(orderId);
         order.setState(OrderState.ASSEMBLED);
+        log.info("Order {} get status ASSEMBLED", orderId);
         return OrderMapper.mapOrder(repository.save(order));
     }
 
     @Override
     public OrderDto assemblyFailed(String orderId) {
-        var order = repository.findById(UUID.fromString(orderId)).orElseThrow(
-                () -> new NoOrderFoundException("No order with Id " + orderId)
-        );
+        var order = getExistingOrder(orderId);
         order.setState(OrderState.ASSEMBLY_FAILED);
+        log.info("Order {} get status ASSEMBLY_FAILED", orderId);
         return OrderMapper.mapOrder(repository.save(order));
+    }
+
+    private Order getExistingOrder(String orderId) {
+        return repository.findById(UUID.fromString(orderId)).orElseThrow(
+                () -> new NoOrderFoundException(String.format("No order with Id %s in database", orderId))
+        );
+    }
+
+    private Order createNewOrder(Map<String, Integer> productsMap) {
+        Order order = Order.builder()
+                .products(OrderMapper.mapToOrderProductList(productsMap))
+                .state(OrderState.NEW)
+                .build();
+        return repository.save(order);
+    }
+
+    private DeliveryDto createOrderDelivery(String orderId, AddressDto recipient) {
+        return deliveryFeign.planDelivery(DeliveryDto.builder()
+                .fromAddress(warehouseFeign.getAddress())
+                .toAddress(recipient)
+                .orderId(orderId)
+                .build());
+    }
+
+    private BookedProductsDto createWarehouseBooking(String orderId, List<OrderProduct> productsList) {
+        return warehouseFeign.assemblyProductsForOrder(AssemblyProductsForOrderRequest.builder()
+                .orderId(orderId)
+                .products(OrderMapper.mapOrderProductList(productsList))
+                .build());
+    }
+
+    private Order fillOrderDetails(Order order, BookedProductsDto booking, DeliveryDto delivery) {
+        order.setDeliveryVolume(booking.getDeliveryVolume());
+        order.setDeliveryWeight(booking.getDeliveryWeight());
+        order.setFragile(booking.getFragile());
+        order.setProductPrice(paymentFeign.productCost(OrderMapper.mapOrder(order)));
+        order.setDeliveryPrice(deliveryFeign.getDeliveryCost(OrderMapper.mapOrder(order)));
+        order.setTotalPrice(paymentFeign.getTotalCost(OrderMapper.mapOrder(order)));
+        order.setDeliveryId(UUID.fromString(delivery.getDeliveryId()));
+        return repository.save(order);
     }
 }

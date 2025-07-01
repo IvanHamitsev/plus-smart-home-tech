@@ -20,7 +20,7 @@ public class DeliveryMapper {
 
     public static Delivery mapDeliveryDto(DeliveryDto inp) {
         return Delivery.builder()
-                .id(UUID.fromString(inp.getDeliveryId()))
+                .id(null == inp.getDeliveryId() ? null : UUID.fromString(inp.getDeliveryId()))
                 .state(inp.getState())
                 .orderId(inp.getOrderId())
                 .from(mapAddressDto(inp.getFromAddress()))
