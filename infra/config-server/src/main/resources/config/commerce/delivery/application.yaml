@@ -1,3 +1,10 @@
+delivery-price:
+  baseCost : 5.0
+  addressRatio: 2.0
+  fragileRatio: 1.2
+  farRatio: 1.2
+  weightRatio: 0.3
+  volumeRatio: 0.2
 server.port: 0
 logging:
   level:
